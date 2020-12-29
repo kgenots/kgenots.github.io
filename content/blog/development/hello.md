@@ -2,7 +2,7 @@
 title: 'Welcome Bee starter'
 date: 2020-07-04 12:21:13
 category: 'development'
-draft: false
+draft: true
 ---
 
 ![](./images/hello.png)
@@ -16,7 +16,7 @@ Welcome, Gatsby! This starter is full-package for your new blog!
 title: 'Welcome Bee starter'
 date: 2019-2-6 16:21:13
 category: 'development'
-draft: false
+draft: true
 ---
 ```
 
