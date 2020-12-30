@@ -111,3 +111,13 @@ lang: 'ko'
 
 ### 제 1회 마이다스 챌린지 최우수상 (마이다스 아이티)
 - 그래픽스 OpenGL 분야 (모델 렌더링, 텍스쳐 매핑) 2위 (2016년)  
+
+<div align="center" class="final">
+
+_감사합니다._
+
+<br/>
+
+<sub><sup>3D Graphics Engineer, <a href="https://github.com/kgenots">@kgenots</a></sup></sub>
+
+</div>
