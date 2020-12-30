@@ -27,4 +27,9 @@ module.exports = {
     facebookAppId: '', // Add facebookAppId for using facebook share feature v3.2
   },
   ga: 'G-D0MS8JBRWV', // Add your google analytics tracking ID
+  resume: {
+    title: 'About Kgenots',
+    description: 'docs: Update RESUME.md for introducing myself',
+    thumbnail: ''
+  }
 }
