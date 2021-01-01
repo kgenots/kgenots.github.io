@@ -30,8 +30,8 @@ lang: 'ko'
 - 개발 언어 : C#(Unity3D)
 - 주요 역할
   - 가상 인테리어 Interface, SDK 개발
+  - 멀티 OS 메서드 호출 지원
   - 3D Resource CDN 기능 제공
-  - Multi-OS 메서드 호출 지원
 
 ### 가상 인테리어 웹 서비스
 - 개발 언어 : Javascript(ReactJS)
