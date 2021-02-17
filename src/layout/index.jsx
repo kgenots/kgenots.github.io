@@ -20,6 +20,7 @@ export const Layout = ({ location, title, children }) => {
           marginRight: `auto`,
           maxWidth: rhythm(24),
           padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
+          height: `calc(100vh - 4.875rem)`
         }}
       >
         <ThemeSwitch />
