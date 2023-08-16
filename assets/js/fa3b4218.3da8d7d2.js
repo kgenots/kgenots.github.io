@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[39740],{58018:t=>{t.exports=JSON.parse('{"label":"quickstart","permalink":"/ios-core/tags/quickstart","allTagsPath":"/ios-core/tags","count":1,"items":[{"id":"quickstart","title":"Quickstart","description":"Quickstart guide for iOS mobile core.","permalink":"/ios-core/"}]}')}}]);

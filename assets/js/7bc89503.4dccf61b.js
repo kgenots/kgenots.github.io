@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[77619],{63231:e=>{e.exports=JSON.parse('{"label":"Design System","permalink":"/flutter/tags/design-system","allTagsPath":"/flutter/tags","count":1,"items":[{"id":"design-token","title":"Design System","description":"Design guide for Flutter UI Kit.","permalink":"/flutter/design-token"}]}')}}]);

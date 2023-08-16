@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[95318],{46266:e=>{e.exports=JSON.parse('{"label":"releasenotes","permalink":"/react-native/tags/releasenotes","allTagsPath":"/react-native/tags","count":1,"items":[{"id":"release-notes","title":"Release Notes","description":"","permalink":"/react-native/release-notes"}]}')}}]);

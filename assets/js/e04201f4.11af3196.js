@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[9882],{96664:e=>{e.exports=JSON.parse('{"label":"methods","permalink":"/web-core/tags/methods","allTagsPath":"/web-core/tags","count":1,"items":[{"id":"local-user/extras","title":"Other Methods","description":"Methods to manage the local user.","permalink":"/web-core/local-user/extras"}]}')}}]);
