@@ -8,21 +8,17 @@
     <subtitle>KGENOTS Blog</subtitle>
     <icon>https://kgenots.com/favicon.ico</icon>
     <entry>
-        <title type="html"><![CDATA[Welcome Docusaurus v2]]></title>
-        <id>https://kgenots.com/blog/welcome-docusaurus-v2</id>
-        <link href="https://kgenots.com/blog/welcome-docusaurus-v2"/>
+        <title type="html"><![CDATA[Post Template]]></title>
+        <id>https://kgenots.com/blog/post-template</id>
+        <link href="https://kgenots.com/blog/post-template"/>
         <updated>2019-09-05T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[This is my first post on Docusaurus 2.]]></summary>
+        <summary type="html"><![CDATA[This is post template.]]></summary>
         <content type="html"><![CDATA[<p>Welcome to this blog. This blog is created with <a href="https://docusaurus.io/" target="_blank" rel="noopener noreferrer"><strong>Docusaurus 2</strong></a>.</p><p>This is my first post on Docusaurus 2.</p><p>A whole bunch of exploration to follow.</p>]]></content>
         <author>
-            <name>Joel Marcey</name>
-            <uri>https://github.com/JoelMarcey</uri>
+            <name>KGENOTS</name>
+            <uri>https://github.com/kgenots</uri>
         </author>
-        <author>
-            <name>Sébastien Lorber</name>
-            <uri>https://sebastienlorber.com</uri>
-        </author>
-        <category label="hello" term="hello"/>
-        <category label="docusaurus-v2" term="docusaurus-v2"/>
+        <category label="post" term="post"/>
+        <category label="template" term="template"/>
     </entry>
 </feed>

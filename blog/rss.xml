@@ -9,14 +9,14 @@
         <generator>https://github.com/jpmonette/feed</generator>
         <language>ko</language>
         <item>
-            <title><![CDATA[Welcome Docusaurus v2]]></title>
-            <link>https://kgenots.com/blog/welcome-docusaurus-v2</link>
-            <guid>https://kgenots.com/blog/welcome-docusaurus-v2</guid>
+            <title><![CDATA[Post Template]]></title>
+            <link>https://kgenots.com/blog/post-template</link>
+            <guid>https://kgenots.com/blog/post-template</guid>
             <pubDate>Thu, 05 Sep 2019 00:00:00 GMT</pubDate>
-            <description><![CDATA[This is my first post on Docusaurus 2.]]></description>
+            <description><![CDATA[This is post template.]]></description>
             <content:encoded><![CDATA[<p>Welcome to this blog. This blog is created with <a href="https://docusaurus.io/" target="_blank" rel="noopener noreferrer"><strong>Docusaurus 2</strong></a>.</p><p>This is my first post on Docusaurus 2.</p><p>A whole bunch of exploration to follow.</p>]]></content:encoded>
-            <category>hello</category>
-            <category>docusaurus-v2</category>
+            <category>post</category>
+            <category>template</category>
         </item>
     </channel>
 </rss>
