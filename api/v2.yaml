@@ -5819,7 +5819,7 @@ tags:
   - name: Analytics
   - name: Organizations
 externalDocs:
-  url: 'https://docs.dyte.io'
+  url: 'https://kgenots.com'
   description: ''
 security:
   - Authorization: []
