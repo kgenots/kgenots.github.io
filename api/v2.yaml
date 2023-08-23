@@ -1846,7 +1846,7 @@ paths:
                 {
                   message: "Unauthorized"
                 }
-  '/webhooks/{webhook_id}':
+  '/etc/{webhook_id}':
     summary: Represents a single webhook
     description: Represents a single webhook for an organization by ID
     get:

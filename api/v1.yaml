@@ -655,7 +655,7 @@ paths:
         schema:
           type: string
           format: uuid
-  '/organizations/{organizationId}/webhooks/{webhookId}':
+  '/organizations/{organizationId}/etc/{webhookId}':
     summary: Operations on a webhook
     get:
       summary: Get a webhook
@@ -723,7 +723,7 @@ paths:
         schema:
           type: string
           format: uuid
-  '/organizations/{organizationId}/webhooks/{webhookId}/logs':
+  '/organizations/{organizationId}/etc/{webhookId}/logs':
     summary: webhook
     get:
       summary: Get all logs for a webhook

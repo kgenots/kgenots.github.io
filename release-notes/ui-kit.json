@@ -36,8 +36,7 @@
     "createdAt": 1682985600,
     "fixes": [
       "Optimized the performance of `<dyte-participants-audio />`",
-      "Fixed a style issue with `<participant-tile />` on Safari browser.",
-      "Optimized a few more components for [Breakout rooms](/develop/breakoutroom/introduction-breakout-rooms)."
+      "Fixed a style issue with `<participant-tile />` on Safari browser."
     ],
     "features": [
       "A new `dialogClose` not gets fired when you close the dialog.",
