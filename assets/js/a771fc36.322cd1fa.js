@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[37915],{99871:t=>{t.exports=JSON.parse('{"label":"waitlist","permalink":"/ios-core/tags/waitlist","allTagsPath":"/ios-core/tags","count":1,"items":[{"id":"waitlist-events","title":"Waitlist Events","description":"Waitlist Events Listener","permalink":"/ios-core/waitlist-events"}]}')}}]);

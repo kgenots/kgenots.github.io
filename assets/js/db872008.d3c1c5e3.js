@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[37610],{92497:e=>{e.exports=JSON.parse('{"label":"plugins","permalink":"/android-core/tags/plugins","allTagsPath":"/android-core/tags","count":1,"items":[{"id":"plugins","title":"Plugins","description":"Interact with plugins in a meeting.","permalink":"/android-core/plugins"}]}')}}]);

@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[64819],{62226:e=>{e.exports=JSON.parse('{"label":"recording","permalink":"/ios-core/tags/recording","allTagsPath":"/ios-core/tags","count":1,"items":[{"id":"recording","title":"Recording","description":"Control recordings in a meeting.","permalink":"/ios-core/recording"}]}')}}]);
