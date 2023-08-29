@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[11713],{53457:e=>{e.exports=JSON.parse('[{"label":"post","permalink":"/blog/tags/post","count":1},{"label":"template","permalink":"/blog/tags/template","count":1}]')}}]);

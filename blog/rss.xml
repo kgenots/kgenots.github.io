@@ -4,19 +4,18 @@
         <title>KGENOTS Blog</title>
         <link>https://kgenots.com/blog</link>
         <description>KGENOTS Blog</description>
-        <lastBuildDate>Thu, 05 Sep 2019 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 29 Aug 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>ko</language>
         <item>
-            <title><![CDATA[Post Template]]></title>
-            <link>https://kgenots.com/blog/post-template</link>
-            <guid>https://kgenots.com/blog/post-template</guid>
-            <pubDate>Thu, 05 Sep 2019 00:00:00 GMT</pubDate>
-            <description><![CDATA[This is post template.]]></description>
-            <content:encoded><![CDATA[<p>Welcome to this blog. This blog is created with <a href="https://docusaurus.io/" target="_blank" rel="noopener noreferrer"><strong>Docusaurus 2</strong></a>.</p><p>This is my first post on Docusaurus 2.</p><p>A whole bunch of exploration to follow.</p>]]></content:encoded>
-            <category>post</category>
-            <category>template</category>
+            <title><![CDATA[블로그 새로 시작하기]]></title>
+            <link>https://kgenots.com/blog/blog-renewal</link>
+            <guid>https://kgenots.com/blog/blog-renewal</guid>
+            <pubDate>Tue, 29 Aug 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[재테크, 부동산, 건강 등 여러 블로그를 운영하고 있지만, 가장 운영에 고민이 되는 블로그는 항상 개발 블로그인것 같습니다.]]></description>
+            <content:encoded><![CDATA[<p>재테크, 부동산, 건강 등 여러 블로그를 운영하고 있지만, 가장 운영에 고민이 되는 블로그는 항상 개발 블로그인것 같습니다.</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="블로그-리뉴얼">블로그 리뉴얼<a href="#블로그-리뉴얼" class="hash-link" aria-label="블로그 리뉴얼에 대한 직접 링크" title="블로그 리뉴얼에 대한 직접 링크">​</a></h2><p>다른 주제의 블로그의 경우, 정보성 글만 올리다보니 정확도만 신경 쓰면 되는 편입니다. 반면에 개발 블로그는 항상 꾸준히 내가 학습하고 경험해 본 지식들을 적어야하는 부담감이 있습니다. 정확도를 신경 쓰는만큼 꾸준히 개발하고 그 일들을 기록하는 일들이 그만큼 쉽지 않다는 것이지요.</p>]]></content:encoded>
+            <category>branding</category>
         </item>
     </channel>
 </rss>

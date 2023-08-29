@@ -2,23 +2,18 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://kgenots.com/blog</id>
     <title>KGENOTS Blog</title>
-    <updated>2019-09-05T00:00:00.000Z</updated>
+    <updated>2023-08-29T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://kgenots.com/blog"/>
     <subtitle>KGENOTS Blog</subtitle>
     <icon>https://kgenots.com/favicon.ico</icon>
     <entry>
-        <title type="html"><![CDATA[Post Template]]></title>
-        <id>https://kgenots.com/blog/post-template</id>
-        <link href="https://kgenots.com/blog/post-template"/>
-        <updated>2019-09-05T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[This is post template.]]></summary>
-        <content type="html"><![CDATA[<p>Welcome to this blog. This blog is created with <a href="https://docusaurus.io/" target="_blank" rel="noopener noreferrer"><strong>Docusaurus 2</strong></a>.</p><p>This is my first post on Docusaurus 2.</p><p>A whole bunch of exploration to follow.</p>]]></content>
-        <author>
-            <name>KGENOTS</name>
-            <uri>https://github.com/kgenots</uri>
-        </author>
-        <category label="post" term="post"/>
-        <category label="template" term="template"/>
+        <title type="html"><![CDATA[블로그 새로 시작하기]]></title>
+        <id>https://kgenots.com/blog/blog-renewal</id>
+        <link href="https://kgenots.com/blog/blog-renewal"/>
+        <updated>2023-08-29T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[재테크, 부동산, 건강 등 여러 블로그를 운영하고 있지만, 가장 운영에 고민이 되는 블로그는 항상 개발 블로그인것 같습니다.]]></summary>
+        <content type="html"><![CDATA[<p>재테크, 부동산, 건강 등 여러 블로그를 운영하고 있지만, 가장 운영에 고민이 되는 블로그는 항상 개발 블로그인것 같습니다.</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="블로그-리뉴얼">블로그 리뉴얼<a href="#블로그-리뉴얼" class="hash-link" aria-label="블로그 리뉴얼에 대한 직접 링크" title="블로그 리뉴얼에 대한 직접 링크">​</a></h2><p>다른 주제의 블로그의 경우, 정보성 글만 올리다보니 정확도만 신경 쓰면 되는 편입니다. 반면에 개발 블로그는 항상 꾸준히 내가 학습하고 경험해 본 지식들을 적어야하는 부담감이 있습니다. 정확도를 신경 쓰는만큼 꾸준히 개발하고 그 일들을 기록하는 일들이 그만큼 쉽지 않다는 것이지요.</p>]]></content>
+        <category label="branding" term="branding"/>
     </entry>
 </feed>
