@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[48427],{34091:a=>{a.exports=JSON.parse('{"label":"branding","permalink":"/blog/tags/branding","allTagsPath":"/blog/tags","count":1}')}}]);

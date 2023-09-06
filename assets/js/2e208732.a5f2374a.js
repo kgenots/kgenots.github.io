@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdyte_docs=self.webpackChunkdyte_docs||[]).push([[29515],{46947:e=>{e.exports=JSON.parse('{"permalink":"/blog/tags/branding","page":1,"postsPerPage":1,"totalPages":1,"totalCount":1,"blogDescription":"KGENOTS Blog","blogTitle":"Blog"}')}}]);
