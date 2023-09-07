@@ -2,4 +2,3 @@ User-agent: *
 Disallow: /tags/
 Disallow: /archive/
 Sitemap: https://kgenots.com/sitemap.xml
-Sitemap: https://kgenots.com/blog/sitemap.xml
