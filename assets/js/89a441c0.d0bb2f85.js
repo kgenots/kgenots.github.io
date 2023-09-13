@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[2746],{89007:(e,t,a)=>{a.r(t),a.d(t,{default:()=>h});var n=a(67294),s=a(76775);function h(){const e=(0,s.k6)();return n.createElement(s.l_,{to:{pathname:"/api",search:"v=v2",hash:e.location.hash}})}}}]);

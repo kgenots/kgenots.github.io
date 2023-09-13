@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[24228],{27971:t=>{t.exports=JSON.parse('{"label":"waitlist","permalink":"/archive/tags/waitlist","allTagsPath":"/archive/tags","count":1,"items":[{"id":"ios-core/waitlist-events","title":"Waitlist Events","description":"Waitlist Events Listener","permalink":"/archive/ios-core/waitlist-events"}]}')}}]);
