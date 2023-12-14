@@ -8,29 +8,45 @@
     <subtitle>KGENOTS Blog</subtitle>
     <icon>https://kgenots.com/favicon.ico</icon>
     <entry>
-        <title type="html"><![CDATA[PostgreSQL 멀티테넌시 구성 예시 (ft. SaaS 구성)]]></title>
+        <title type="html"><![CDATA[PostgreSQL 멀티테넌시 구성 전략 (ft. SaaS 구성)]]></title>
         <id>https://kgenots.com/blog/postgresql-saas-multitenancy</id>
         <link href="https://kgenots.com/blog/postgresql-saas-multitenancy"/>
         <updated>2023-11-13T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[멀티테넌시의 의미를 알아보고 PostgreSQL 에서 멀티테넌시를 구성하는 방법에 대해서 알아봅니다.]]></summary>
         <content type="html"><![CDATA[<p>멀티테넌시의 의미를 알아보고 PostgreSQL 에서 멀티테넌시를 구성하는 방법에 대해서 알아봅니다.</p>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="멀티테넌시multi-tenancy">멀티테넌시(Multi-Tenancy)?<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#%EB%A9%80%ED%8B%B0%ED%85%8C%EB%84%8C%EC%8B%9Cmulti-tenancy" class="hash-link" aria-label="멀티테넌시(Multi-Tenancy)?에 대한 직접 링크" title="멀티테넌시(Multi-Tenancy)?에 대한 직접 링크">​</a></h2>
-<p>먼저, 테넌시(Tenancy)란 '차용, 소작'을 의미합니다. '임차'라는 단어를 사용하면 조금 더 이해가 쉬울 것 같습니다.
-여러 회사 또는 개인이 건물에 각각의 호실을 임차하는 것을 '멀티테넌시(Multi-Tenancy)'로 비유할 수 있을 것 같습니다.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="멀티테넌시multi-tenancy-란">멀티테넌시(Multi-Tenancy) 란?<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#%EB%A9%80%ED%8B%B0%ED%85%8C%EB%84%8C%EC%8B%9Cmulti-tenancy-%EB%9E%80" class="hash-link" aria-label="멀티테넌시(Multi-Tenancy) 란?에 대한 직접 링크" title="멀티테넌시(Multi-Tenancy) 란?에 대한 직접 링크">​</a></h2>
+<p>먼저, 테넌시(Tenancy)란 '차용, 소작'을 의미합니다. 하나의 인스턴스로 여러 고객에게 서비스를 제공할 수 있는 소프트웨어 아키텍처를 '멀티테넌시(Multi-Tenancy)'라고 합니다. 반대되는 개념으로 단일 인스턴스 - 단일 고객인 경우 단일 테넌시라고 합니다.</p>
+<p>다시 말해, 멀티 테넌시는 하나의 서비스 내에서 '고객의 정보를 분리/관리'하는 것으로 이해할 수 있습니다.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="멀티테넌시-구성-전략">멀티테넌시 구성 전략<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#%EB%A9%80%ED%8B%B0%ED%85%8C%EB%84%8C%EC%8B%9C-%EA%B5%AC%EC%84%B1-%EC%A0%84%EB%9E%B5" class="hash-link" aria-label="멀티테넌시 구성 전략에 대한 직접 링크" title="멀티테넌시 구성 전략에 대한 직접 링크">​</a></h2>
-<p>멀티테넌시를 구성하는 전략은 대표적으로 Row Level, Schema Level, Database Level 3가지가 있습니다.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="row-level">Row Level<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#row-level" class="hash-link" aria-label="Row Level에 대한 직접 링크" title="Row Level에 대한 직접 링크">​</a></h3>
-<p>단일테넌시에서 Foreign Key를 사용해서 데이터 관계을 구성하듯이, Tenant를 관리할 별도의 테이블을 작성하고, tenant_id를 각 데이터 행에 부여함으로써 Row의 소유권을 가지게됩니다.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="schema-level">Schema Level<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#schema-level" class="hash-link" aria-label="Schema Level에 대한 직접 링크" title="Schema Level에 대한 직접 링크">​</a></h3>
-<p>PostgreSQL의 경우, Database 와 Table 사이에 Schema 라는 일종의 네임스페이스를 구성할 수 있습니다. 이를 통해 단일 DB 내에서 Schema를 통해 Tenant를 구성할 수 있습니다.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="database-level">Database Level<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#database-level" class="hash-link" aria-label="Database Level에 대한 직접 링크" title="Database Level에 대한 직접 링크">​</a></h3>
-<p>모든 테넌트에 대해 완전히 다른 DB를 설정합니다.</p>
+<p>멀티테넌시를 구성하는 전략은 대표적으로 Silo 모델, Pool 모델, Bridge 모델 3가지가 있습니다.</p>
+<table style="text-align:center"><thead><tr><th width="25%" rowspan="2">Silo Model</th><th width="50%" colspan="2">Bridge Model</th><th width="25%" rowspan="2">Pool Model</th></tr><tr><th width="25%">Database</th><th width="25%">Schema</th></tr></thead><tbody><tr><td><img src="https://kgenots.com/static/blog/saas-postgresql-silo.png" alt="saas-postgresql-silo"></td><td><img src="https://kgenots.com/static/blog/saas-postgresql-bridge-dbs.png" alt="saas-postgresql-bridge-dbs"></td><td><img src="https://kgenots.com/static/blog/saas-postgresql-bridge-schemas.png" alt="saas-postgresql-bridge-schemas"></td><td><img src="https://kgenots.com/static/blog/saas-postgresql-pool.png" alt="saas-postgresql-pool"></td></tr></tbody></table>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="silo-model-사일로-모델">Silo Model (사일로 모델)<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#silo-model-%EC%82%AC%EC%9D%BC%EB%A1%9C-%EB%AA%A8%EB%8D%B8" class="hash-link" aria-label="Silo Model (사일로 모델)에 대한 직접 링크" title="Silo Model (사일로 모델)에 대한 직접 링크">​</a></h3>
+<p>사일로 모델은 각 테넌트에 대해
+<span style="background-color:#fff5b1"><b>별도의 DB Instance</b></span> 를 부여하는 방법입니다.
+<span style="text-decoration:underline">물리적/논리적으로 테넌트 간의 서로 상관 관계가 존재하지 않습니다.</span>
+보안 문제나 규제로 인해 고객이 추가 비용을 지불하고 데이터의 완전 분리를 원하는 경우 제공할 수 있는 서비스 형태입니다.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="pool-model-풀-모델">Pool Model (풀 모델)<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#pool-model-%ED%92%80-%EB%AA%A8%EB%8D%B8" class="hash-link" aria-label="Pool Model (풀 모델)에 대한 직접 링크" title="Pool Model (풀 모델)에 대한 직접 링크">​</a></h3>
+<p>풀 모델은
+<span style="background-color:#fff5b1"><b>단일 DB Instance, 행 수준 보안(RTS)</b></span>
+를 사용하여 구현됩니다. <code>tenant_id</code> 또는 <code>org_id</code> 와 같은 Foreign Key를 통해 테넌트 데이터의 격리를 유지합니다. 사일로 모델에 비해 운영 오버헤드가 더 적은 장점이 있습니다. 테넌트별 리소스 관리(분리) 및 분석이 어렵다는 단점이 있습니다.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="bridge-model-브릿지-모델">Bridge Model (브릿지 모델)<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#bridge-model-%EB%B8%8C%EB%A6%BF%EC%A7%80-%EB%AA%A8%EB%8D%B8" class="hash-link" aria-label="Bridge Model (브릿지 모델)에 대한 직접 링크" title="Bridge Model (브릿지 모델)에 대한 직접 링크">​</a></h3>
+<p>브릿지 모델은 사일로 모델과 풀 모델을 조합한 방식입니다. 단일 DB Instance 내부에서
+<span style="text-decoration:underline">논리적 Database 분할</span>
+또는
+<span style="text-decoration:underline">테넌트별로 Schema 생성 및 관리</span>
+합니다. 풀 모델의 결합 정도를 끊어내고, 물리적으로는 동일한 DB Instance를 사용하기에 각각의 단점을 보완할 수 있는 방법입니다.</p>
+<span style="background-color:#f1f8ff">PostgreSQL의 경우 Database 와 Table 사이 Schema 라는 일종의 네임스페이스를 구성할 수 있습니다.</span>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="멀티테넌시-구성-비교">멀티테넌시 구성 비교<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#%EB%A9%80%ED%8B%B0%ED%85%8C%EB%84%8C%EC%8B%9C-%EA%B5%AC%EC%84%B1-%EB%B9%84%EA%B5%90" class="hash-link" aria-label="멀티테넌시 구성 비교에 대한 직접 링크" title="멀티테넌시 구성 비교에 대한 직접 링크">​</a></h2>
-<table><thead><tr><th>-</th><th>Row Level</th><th>Schema Level</th><th>Database Level</th></tr></thead><tbody><tr><td>테넌트 구성 시간</td><td>⚡️매우 빠름</td><td>🐢 느림(스키마 생성, 테이블 생성)</td><td>🐌매우 느림</td></tr><tr><td>데이터 유출 위험</td><td>위험(tenant_id)</td><td>덜 위험(query)</td><td>안전(independent)</td></tr><tr><td>공유테이블 생성, <br> 테넌트 병합</td><td>매우 쉬움</td><td>SQL로 수행 가능</td><td>SQL로 수행 불가</td></tr><tr><td>DB 마이그레이션</td><td>⚡️매우 빠름</td><td>🐢 느림(스키마 생성, 테이블 생성)</td><td>🐌매우 느림</td></tr><tr><td>운영 오버헤드</td><td>거의 없음</td><td>가끔 발생</td><td>수작업</td></tr><tr><td>복잡성</td><td>tenent_id로 관리</td><td>search_path 및 PG 기능으로 커버</td><td>...</td></tr><tr><td>테넌트별 데이터 추출</td><td>번거로운 작업</td><td>쉬움</td><td>쉬움</td></tr><tr><td>테넌트별 구조 커스터마이징</td><td>문제</td><td>가능</td><td>가능</td></tr></tbody></table>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="필자가-선호하는-전략">필자가 선호하는 전략<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#%ED%95%84%EC%9E%90%EA%B0%80-%EC%84%A0%ED%98%B8%ED%95%98%EB%8A%94-%EC%A0%84%EB%9E%B5" class="hash-link" aria-label="필자가 선호하는 전략에 대한 직접 링크" title="필자가 선호하는 전략에 대한 직접 링크">​</a></h2>
-<p>인적 자원의 Role의 구분이 뚜렷한 (DBA) + SQL / (BE) DTO + DAO + Controller / (API) API 가 관리 측면에서 중요할 수도 있습니다. 하지만, 서비스의 확장성, 다양성을 위해 개발의 속도가 중요하다고 판단 시, 아래와 같은 구성을 선호하는 편입니다.</p>
-<p>ORM 을 통해 Database의 기본적인 Table Schema를 관리하고, 필요 시 Schema(네임스페이스) 단위로 복제하는 형식을 선호합니다.</p>
-<p>다만 ORM 를 통해 DB를 관리하는 경우, Transaction, Indexing 등 가장 기본적인 부분을 놓칠 수 있어 조심해야합니다.</p>]]></content>
+<figure style="display:flex;justify-content:center"><table><thead><tr><th>-</th><th>Silo Model</th><th>Pool Model</th><th>Bridge Model</th></tr></thead><tbody><tr><td>테넌트 구성 시간</td><td>🐌매우 느림</td><td>⚡️매우 빠름</td><td>🐢 느림(스키마 생성, 테이블 생성)</td></tr><tr><td>데이터 유출 위험</td><td>안전(independent)</td><td>위험(tenant_id)</td><td>덜 위험(query)</td></tr><tr><td>공유테이블 생성, <br> 테넌트 병합</td><td>SQL로 수행 불가</td><td>매우 쉬움</td><td>SQL로 수행 가능</td></tr><tr><td>DB 마이그레이션</td><td>🐌매우 느림</td><td>⚡️매우 빠름</td><td>🐢 느림(스키마 생성, 테이블 생성)</td></tr><tr><td>운영 오버헤드</td><td>수작업</td><td>거의 없음</td><td>가끔 발생</td></tr><tr><td>복잡성</td><td>...</td><td>tenent_id로 관리</td><td>search_path 및 PG 기능으로 커버</td></tr><tr><td>테넌트별 데이터 추출</td><td>쉬움</td><td>번거로운 작업</td><td>쉬움</td></tr><tr><td>테넌트별 구조 커스터마이징</td><td>가능</td><td>문제</td><td>가능</td></tr></tbody></table></figure>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="선호하는-전략">선호하는 전략<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#%EC%84%A0%ED%98%B8%ED%95%98%EB%8A%94-%EC%A0%84%EB%9E%B5" class="hash-link" aria-label="선호하는 전략에 대한 직접 링크" title="선호하는 전략에 대한 직접 링크">​</a></h2>
+<p>BackEnd 는 역할별로 (DBA) DB + SQL / (BE) DTO + DAO + Controller / (API) API 로 구분됩니다.</p>
+<p>전통적인 Role 중심의 구조와는 달리 서비스의 확장성, 다양성, 무결성을 타협할 수 있다면,
+<span style="background-color:#fff5b1">Schema가 분리된 <b>브릿지 모델</b></span>을 ORM(SQLAlchemy, Prisma, TypeORM)을 통해 관리하는 방식을 선호하는 편입니다.</p>
+<p>이 방식은 ORM을 통해 기본 Schema를 생성하고 테넌트가 유입될 시, 해당 Schema를 복제하는 방법으로 테넌트별 데이터를 격리하는 방식입니다. 주의할 점으로는 SQL(Raw Query)로 직접 Schema 를 관리하게 되면, Schema 별로 다른 ERD 구성이 나올 수 있습니다. 때문에 ORM을 통해 기본 ERD 를 수정 및 마이그레이션 하는 전략을 선호합니다.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="참고자료">참고자료<a href="https://kgenots.com/blog/postgresql-saas-multitenancy#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크">​</a></h2>
+<ul>
+<li><a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/saas-multitenant-managed-postgresql" target="_blank" rel="noopener noreferrer">https://docs.aws.amazon.com/prescriptive-guidance/latest/saas-multitenant-managed-postgresql</a></li>
+</ul>]]></content>
         <category label="DB" term="DB"/>
         <category label="PostgreSQL" term="PostgreSQL"/>
     </entry>
