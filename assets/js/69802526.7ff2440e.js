@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[5528],{77713:s=>{s.exports=JSON.parse('{"label":"PostgreSQL","permalink":"/blog/tags/postgre-sql","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);
