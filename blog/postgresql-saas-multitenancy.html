@@ -12,8 +12,8 @@
 
 
 <link rel="search" type="application/opensearchdescription+xml" title="KGENOTS" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.2c08d9f0.css">
-<script src="/assets/js/runtime~main.667a792b.js" defer="defer"></script>
-<script src="/assets/js/main.631e5346.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.8f636db2.js" defer="defer"></script>
+<script src="/assets/js/main.09af7d44.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=G-D0MS8JBRWV" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -45,7 +45,7 @@
 <figure style="display:flex;justify-content:center"><table><thead><tr><th>-</th><th>Silo Model</th><th>Pool Model</th><th>Bridge Model</th></tr></thead><tbody><tr><td>테넌트 구성 시간</td><td>🐌매우 느림</td><td>⚡️매우 빠름</td><td>🐢 느림(스키마 생성, 테이블 생성)</td></tr><tr><td>데이터 유출 위험</td><td>안전(independent)</td><td>위험(tenant_id)</td><td>덜 위험(query)</td></tr><tr><td>공유테이블 생성, <br> 테넌트 병합</td><td>SQL로 수행 불가</td><td>매우 쉬움</td><td>SQL로 수행 가능</td></tr><tr><td>DB 마이그레이션</td><td>🐌매우 느림</td><td>⚡️매우 빠름</td><td>🐢 느림(스키마 생성, 테이블 생성)</td></tr><tr><td>운영 오버헤드</td><td>수작업</td><td>거의 없음</td><td>가끔 발생</td></tr><tr><td>복잡성</td><td>...</td><td>tenent_id로 관리</td><td>search_path 및 PG 기능으로 커버</td></tr><tr><td>테넌트별 데이터 추출</td><td>쉬움</td><td>번거로운 작업</td><td>쉬움</td></tr><tr><td>테넌트별 구조 커스터마이징</td><td>가능</td><td>문제</td><td>가능</td></tr></tbody></table></figure>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="선호하는-전략">선호하는 전략<a href="#선호하는-전략" class="hash-link" aria-label="선호하는 전략에 대한 직접 링크" title="선호하는 전략에 대한 직접 링크">​</a></h2>
 <p>BackEnd 는 역할별로 (DBA) DB + SQL / (BE) DTO + DAO + Controller / (API) API 로 구분됩니다.</p>
-<p>전통적인 Role 중심 의 구조와는 달리 서비스의 확장성, 다양성, 무결성을 타협할 수 있다면,
+<p>전통적인 Role 중심의 구조와는 달리 서비스의 확장성, 다양성, 무결성을 타협할 수 있다면,
 <span style="background-color:#fff5b1">Schema가 분리된 <b>브릿지 모델</b></span>을 ORM(SQLAlchemy, Prisma, TypeORM)을 통해 관리하는 방식을 선호하는 편입니다.</p>
 <p>이 방식은 ORM을 통해 기본 Schema를 생성하고 테넌트가 유입될 시, 해당 Schema를 복제하는 방법으로 테넌트별 데이터를 격리하는 방식입니다. 주의할 점으로는 SQL(Raw Query)로 직접 Schema 를 관리하게 되면, Schema 별로 다른 ERD 구성이 나올 수 있습니다. 때문에 ORM을 통해 기본 ERD 를 수정 및 마이그레이션 하는 전략을 선호합니다.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="참고자료">참고자료<a href="#참고자료" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크">​</a></h2>
