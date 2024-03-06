@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[8405],{9637:s=>{s.exports=JSON.parse('{"label":"Essay","permalink":"/blog/tags/essay","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);

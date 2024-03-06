@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[6],{18954:e=>{e.exports=JSON.parse('{"permalink":"/blog/tags/mac-os","page":1,"postsPerPage":5,"totalPages":1,"totalCount":5,"blogDescription":"KGENOTS Blog","blogTitle":"Blog"}')}}]);
