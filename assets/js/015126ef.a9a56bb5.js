@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[373],{9978:s=>{s.exports=JSON.parse('{"label":"AWS","permalink":"/blog/tags/aws","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);

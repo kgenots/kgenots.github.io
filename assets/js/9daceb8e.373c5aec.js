@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[6536],{6201:t=>{t.exports=JSON.parse('{"label":"Virtualization","permalink":"/blog/tags/virtualization","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);

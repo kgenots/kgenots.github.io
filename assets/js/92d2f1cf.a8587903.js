@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[7240],{2904:t=>{t.exports=JSON.parse('{"permalink":"/blog/tags/virtualization","page":1,"postsPerPage":5,"totalPages":1,"totalCount":1,"blogDescription":"KGENOTS Blog","blogTitle":"Blog"}')}}]);

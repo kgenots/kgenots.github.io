@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[9527],{6700:s=>{s.exports=JSON.parse('{"label":"Unity","permalink":"/blog/tags/unity","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);

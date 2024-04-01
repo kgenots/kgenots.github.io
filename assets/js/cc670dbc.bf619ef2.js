@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[5273],{9635:e=>{e.exports=JSON.parse('{"label":"NodeJS","permalink":"/blog/tags/node-js","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);

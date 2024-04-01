@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[2093],{77453:e=>{e.exports=JSON.parse('{"label":"NodeJS","permalink":"/blog/tags/node-js","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);
