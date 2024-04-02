@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[9647],{8523:(e,s,r)=>{r.r(s),r.d(s,{default:()=>o});r(1855);var t=r(1038),u=r(3154),n=r(8013),a=r(2550),c=r(2396),l=r(3159);function o(e){return(0,l.jsx)(u.e3,{className:(0,t.A)(n.G.wrapper.docsPages),children:(0,l.jsx)(c.A,{children:(0,a.v)(e.route.routes)})})}}}]);
