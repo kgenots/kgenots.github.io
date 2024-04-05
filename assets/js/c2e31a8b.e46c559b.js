@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[8484],{8791:s=>{s.exports=JSON.parse('{"label":"MacOS","permalink":"/blog/tags/mac-os","allTagsPath":"/blog/tags","count":5,"unlisted":false}')}}]);

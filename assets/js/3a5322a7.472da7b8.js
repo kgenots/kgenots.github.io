@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkgithub_web=self.webpackChunkgithub_web||[]).push([[5715],{818:e=>{e.exports=JSON.parse('{"permalink":"/blog/tags/node-js","page":1,"postsPerPage":5,"totalPages":1,"totalCount":1,"blogDescription":"KGENOTS Blog","blogTitle":"Blog"}')}}]);

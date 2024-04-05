@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkkgenots_github_blog=self.webpackChunkkgenots_github_blog||[]).push([[7954],{894:e=>{e.exports=JSON.parse('{"permalink":"/blog/tags/essay","page":1,"postsPerPage":5,"totalPages":1,"totalCount":1,"blogDescription":"KGENOTS Blog","blogTitle":"Blog"}')}}]);
