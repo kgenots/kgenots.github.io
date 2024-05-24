@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkgithub_web=self.webpackChunkgithub_web||[]).push([[6536],{6201:a=>{a.exports=JSON.parse('{"label":"Virtualization","permalink":"/blog/tags/virtualization","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);

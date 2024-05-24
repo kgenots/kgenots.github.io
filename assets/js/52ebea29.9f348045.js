@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkgithub_web=self.webpackChunkgithub_web||[]).push([[7030],{20550:e=>{e.exports=JSON.parse('{"permalink":"/blog/tags/mac-os","page":1,"postsPerPage":5,"totalPages":1,"totalCount":5,"blogDescription":"KGENOTS Blog","blogTitle":"Blog"}')}}]);
