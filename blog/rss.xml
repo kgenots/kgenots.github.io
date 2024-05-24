@@ -506,6 +506,35 @@ Single-thread 환경에서 동시에 여러 동작을 하기 위해(멀티쓰레
             <category>MacOS</category>
         </item>
         <item>
+            <title><![CDATA[맥 화면캡처 시, 창 그림자 제거 방법]]></title>
+            <link>https://kgenots.com/blog/mac-remove-window-shadow</link>
+            <guid>https://kgenots.com/blog/mac-remove-window-shadow</guid>
+            <pubDate>Sat, 19 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[맥에서 창 영역을 캡쳐할 때, 창 크기보다 넓은 영역(그림자 포함)의 결과물이 나오는 경우의 대처 방법입니다.]]></description>
+            <content:encoded><![CDATA[<p>맥에서 창 영역을 캡쳐할 때, 창 크기보다 넓은 영역(그림자 포함)의 결과물이 나오는 경우의 대처 방법입니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/mac-remove-window-shadow.webp" alt="mac-remove-window-shadow"></figure>
+<p>MacOS 내에서 창 캡쳐를 하면서 생겼던 그림자가 포함되어 찍히는 문제를 해결하는 방법을 알아보도록 하겠습니다.</p>
+<h2 class="anchor anchorWithStickyNavbar_roEl" id="맥에서-창-캡처-방법">맥에서 창 캡처 방법<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EB%A7%A5%EC%97%90%EC%84%9C-%EC%B0%BD-%EC%BA%A1%EC%B2%98-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="맥에서 창 캡처 방법에 대한 직접 링크" title="맥에서 창 캡처 방법에 대한 직접 링크">​</a></h2>
+<p>우선, 맥에서 창 캡처(스크린샷)를 하는 방법은,</p>
+<p><strong>Shift + Command + 4</strong> 키를 누릅니다. 이 상태에서 <strong>Space bar</strong> 를 누르면 마우스가 카메라 모양으로 바뀝니다.</p>
+<p>이 상태에서 원하는 창에 올려두고 <strong>Enter</strong>&nbsp;를 누르면 창이 캡처가 됩니다.</p>
+<h2 class="anchor anchorWithStickyNavbar_roEl" id="그림자-유무-차이-비교">그림자 유무 차이 비교<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%9C%A0%EB%AC%B4-%EC%B0%A8%EC%9D%B4-%EB%B9%84%EA%B5%90" class="hash-link" aria-label="그림자 유무 차이 비교에 대한 직접 링크" title="그림자 유무 차이 비교에 대한 직접 링크">​</a></h2>
+<table><thead><tr><th width="50%">with shadow</th><th width="50%">without shadow</th></tr></thead><tbody><tr><td><img src="https://kgenots.com/assets/blog/mac-capture-with-shadow.webp" alt="mac-capture-with-shadow" style="border:1px solid red"></td><td><img src="https://kgenots.com/assets/blog/mac-capture-without-shadow.webp" alt="mac-capture-without-shadow" style="border:1px solid red"></td></tr></tbody></table>
+<p>왼쪽 캡처본은 별도의 설정없이 창 캡처를 했을 때의 결과물입니다. 이 경우, 창 밖의 그림자 부분까지 포함하여 캡처가 됩니다. 반대로 오른쪽 캡처본은 그림자 제거 설정을 하였기에, 창 밖의 그림자를 제외하고 창 부분만 깔끔하게 캡처가 된 모습입니다.</p>
+<p><em>창 캡처 시, 배경은 투명 처리된 상태입니다.</em></p>
+<h2 class="anchor anchorWithStickyNavbar_roEl" id="창-크기가-다른거-아닌가요">창 크기가 다른거 아닌가요?<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EC%B0%BD-%ED%81%AC%EA%B8%B0%EA%B0%80-%EB%8B%A4%EB%A5%B8%EA%B1%B0-%EC%95%84%EB%8B%8C%EA%B0%80%EC%9A%94" class="hash-link" aria-label="창 크기가 다른거 아닌가요?에 대한 직접 링크" title="창 크기가 다른거 아닌가요?에 대한 직접 링크">​</a></h2>
+<p>위 화면에서 그림자를 포함한 캡처 이미지가 작아보이지만, 실제로는 창의 크기는 같고, 여백을 포함한 결과물이 이미지의 크기가 큽니다.</p>
+<h2 class="anchor anchorWithStickyNavbar_roEl" id="그림자-제거-방법">그림자 제거 방법<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%A0%9C%EA%B1%B0-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="그림자 제거 방법에 대한 직접 링크" title="그림자 제거 방법에 대한 직접 링크">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_roEl" id="그림자-제거-활성화">그림자 제거 활성화<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%A0%9C%EA%B1%B0-%ED%99%9C%EC%84%B1%ED%99%94" class="hash-link" aria-label="그림자 제거 활성화에 대한 직접 링크" title="그림자 제거 활성화에 대한 직접 링크">​</a></h3>
+<p>'터미널' 앱을 열고 아래 명령어를 순서대로 실행해줍니다.</p>
+<p>아래 명령어를 실행해면 아무 메세지 나오지 않지만 적용이 된 상태입니다.</p>
+<div class="codeBlockContainer_hhXh theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_N9Yv"><pre tabindex="0" class="prism-code language-text codeBlock_ydqk thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_jy1b"><span class="token-line" style="color:#bfc7d5"><span class="token plain">defaults write com.apple.screencapture disable-shadow -bool true</span><br></span><span class="token-line" style="color:#bfc7d5"><span class="token plain">killall SystemUIServer</span><br></span></code></pre><div class="buttonGroup_EaKk"><button type="button" aria-label="클립보드에 코드 복사" title="복사" class="clean-btn"><span class="copyButtonIcons_T3uu" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_TsL9"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_Dk5N"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+<h3 class="anchor anchorWithStickyNavbar_roEl" id="그림자-제거-비활성화-원상복구">그림자 제거 비활성화 (원상복구)<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%A0%9C%EA%B1%B0-%EB%B9%84%ED%99%9C%EC%84%B1%ED%99%94-%EC%9B%90%EC%83%81%EB%B3%B5%EA%B5%AC" class="hash-link" aria-label="그림자 제거 비활성화 (원상복구)에 대한 직접 링크" title="그림자 제거 비활성화 (원상복구)에 대한 직접 링크">​</a></h3>
+<p>위에서 명령어를 실행했던 것처럼 '터미널' 앱을 열고 아래 명령어를 순서대로 실행해줍니다.</p>
+<div class="codeBlockContainer_hhXh theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_N9Yv"><pre tabindex="0" class="prism-code language-text codeBlock_ydqk thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_jy1b"><span class="token-line" style="color:#bfc7d5"><span class="token plain">defaults write com.apple.screencapture disable-shadow -bool false</span><br></span><span class="token-line" style="color:#bfc7d5"><span class="token plain">killall SystemUIServer</span><br></span></code></pre><div class="buttonGroup_EaKk"><button type="button" aria-label="클립보드에 코드 복사" title="복사" class="clean-btn"><span class="copyButtonIcons_T3uu" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_TsL9"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_Dk5N"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>]]></content:encoded>
+            <category>MacOS</category>
+        </item>
+        <item>
             <title><![CDATA[맥 자동실행 항목 설정 방법]]></title>
             <link>https://kgenots.com/blog/mac-startup-program</link>
             <guid>https://kgenots.com/blog/mac-startup-program</guid>
@@ -536,52 +565,6 @@ Single-thread 환경에서 동시에 여러 동작을 하기 위해(멀티쓰레
             <category>MacOS</category>
         </item>
         <item>
-            <title><![CDATA[맥 화면캡처 시, 창 그림자 제거 방법]]></title>
-            <link>https://kgenots.com/blog/mac-remove-window-shadow</link>
-            <guid>https://kgenots.com/blog/mac-remove-window-shadow</guid>
-            <pubDate>Sat, 19 Nov 2022 00:00:00 GMT</pubDate>
-            <description><![CDATA[맥에서 창 영역을 캡쳐할 때, 창 크기보다 넓은 영역(그림자 포함)의 결과물이 나오는 경우의 대처 방법입니다.]]></description>
-            <content:encoded><![CDATA[<p>맥에서 창 영역을 캡쳐할 때, 창 크기보다 넓은 영역(그림자 포함)의 결과물이 나오는 경우의 대처 방법입니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/mac-remove-window-shadow.webp" alt="mac-remove-window-shadow"></figure>
-<p>MacOS 내에서 창 캡쳐를 하면서 생겼던 그림자가 포함되어 찍히는 문제를 해결하는 방법을 알아보도록 하겠습니다.</p>
-<h2 class="anchor anchorWithStickyNavbar_roEl" id="맥에서-창-캡처-방법">맥에서 창 캡처 방법<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EB%A7%A5%EC%97%90%EC%84%9C-%EC%B0%BD-%EC%BA%A1%EC%B2%98-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="맥에서 창 캡처 방법에 대한 직접 링크" title="맥에서 창 캡처 방법에 대한 직접 링크">​</a></h2>
-<p>우선, 맥에서 창 캡처(스크린샷)를 하는 방법은,</p>
-<p><strong>Shift + Command + 4</strong> 키를 누릅니다. 이 상태에서 <strong>Space bar</strong> 를 누르면 마우스가 카메라 모양으로 바뀝니다.</p>
-<p>이 상태에서 원하는 창에 올려두고 <strong>Enter</strong>&nbsp;를 누르면 창이 캡처가 됩니다.</p>
-<h2 class="anchor anchorWithStickyNavbar_roEl" id="그림자-유무-차이-비교">그림자 유무 차이 비교<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%9C%A0%EB%AC%B4-%EC%B0%A8%EC%9D%B4-%EB%B9%84%EA%B5%90" class="hash-link" aria-label="그림자 유무 차이 비교에 대한 직접 링크" title="그림자 유무 차이 비교에 대한 직접 링크">​</a></h2>
-<table><thead><tr><th width="50%">with shadow</th><th width="50%">without shadow</th></tr></thead><tbody><tr><td><img src="https://kgenots.com/assets/blog/mac-capture-with-shadow.webp" alt="mac-capture-with-shadow" style="border:1px solid red"></td><td><img src="https://kgenots.com/assets/blog/mac-capture-without-shadow.webp" alt="mac-capture-without-shadow" style="border:1px solid red"></td></tr></tbody></table>
-<p>왼쪽 캡처본은 별도의 설정없이 창 캡처를 했을 때의 결과물입니다. 이 경우, 창 밖의 그림자 부분까지 포함하여 캡처가 됩니다. 반대로 오른쪽 캡처본은 그림자 제거 설정을 하였기에, 창 밖의 그림자를 제외하고 창 부분만 깔끔하게 캡처가 된 모습입니다.</p>
-<p><em>창 캡처 시, 배경은 투명 처리된 상태입니다.</em></p>
-<h2 class="anchor anchorWithStickyNavbar_roEl" id="창-크기가-다른거-아닌가요">창 크기가 다른거 아닌가요?<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EC%B0%BD-%ED%81%AC%EA%B8%B0%EA%B0%80-%EB%8B%A4%EB%A5%B8%EA%B1%B0-%EC%95%84%EB%8B%8C%EA%B0%80%EC%9A%94" class="hash-link" aria-label="창 크기가 다른거 아닌가요?에 대한 직접 링크" title="창 크기가 다른거 아닌가요?에 대한 직접 링크">​</a></h2>
-<p>위 화면에서 그림자를 포함한 캡처 이미지가 작아보이지만, 실제로는 창의 크기는 같고, 여백을 포함한 결과물이 이미지의 크기가 큽니다.</p>
-<h2 class="anchor anchorWithStickyNavbar_roEl" id="그림자-제거-방법">그림자 제거 방법<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%A0%9C%EA%B1%B0-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="그림자 제거 방법에 대한 직접 링크" title="그림자 제거 방법에 대한 직접 링크">​</a></h2>
-<h3 class="anchor anchorWithStickyNavbar_roEl" id="그림자-제거-활성화">그림자 제거 활성화<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%A0%9C%EA%B1%B0-%ED%99%9C%EC%84%B1%ED%99%94" class="hash-link" aria-label="그림자 제거 활성화에 대한 직접 링크" title="그림자 제거 활성화에 대한 직접 링크">​</a></h3>
-<p>'터미널' 앱을 열고 아래 명령어를 순서대로 실행해줍니다.</p>
-<p>아래 명령어를 실행해면 아무 메세지 나오지 않지만 적용이 된 상태입니다.</p>
-<div class="codeBlockContainer_hhXh theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_N9Yv"><pre tabindex="0" class="prism-code language-text codeBlock_ydqk thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_jy1b"><span class="token-line" style="color:#bfc7d5"><span class="token plain">defaults write com.apple.screencapture disable-shadow -bool true</span><br></span><span class="token-line" style="color:#bfc7d5"><span class="token plain">killall SystemUIServer</span><br></span></code></pre><div class="buttonGroup_EaKk"><button type="button" aria-label="클립보드에 코드 복사" title="복사" class="clean-btn"><span class="copyButtonIcons_T3uu" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_TsL9"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_Dk5N"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
-<h3 class="anchor anchorWithStickyNavbar_roEl" id="그림자-제거-비활성화-원상복구">그림자 제거 비활성화 (원상복구)<a href="https://kgenots.com/blog/mac-remove-window-shadow#%EA%B7%B8%EB%A6%BC%EC%9E%90-%EC%A0%9C%EA%B1%B0-%EB%B9%84%ED%99%9C%EC%84%B1%ED%99%94-%EC%9B%90%EC%83%81%EB%B3%B5%EA%B5%AC" class="hash-link" aria-label="그림자 제거 비활성화 (원상복구)에 대한 직접 링크" title="그림자 제거 비활성화 (원상복구)에 대한 직접 링크">​</a></h3>
-<p>위에서 명령어를 실행했던 것처럼 '터미널' 앱을 열고 아래 명령어를 순서대로 실행해줍니다.</p>
-<div class="codeBlockContainer_hhXh theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_N9Yv"><pre tabindex="0" class="prism-code language-text codeBlock_ydqk thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_jy1b"><span class="token-line" style="color:#bfc7d5"><span class="token plain">defaults write com.apple.screencapture disable-shadow -bool false</span><br></span><span class="token-line" style="color:#bfc7d5"><span class="token plain">killall SystemUIServer</span><br></span></code></pre><div class="buttonGroup_EaKk"><button type="button" aria-label="클립보드에 코드 복사" title="복사" class="clean-btn"><span class="copyButtonIcons_T3uu" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_TsL9"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_Dk5N"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>]]></content:encoded>
-            <category>MacOS</category>
-        </item>
-        <item>
-            <title><![CDATA[npm package.json 순서 정렬하는 방법 (sort-package-json)]]></title>
-            <link>https://kgenots.com/blog/npm-sort-package-json</link>
-            <guid>https://kgenots.com/blog/npm-sort-package-json</guid>
-            <pubDate>Thu, 08 Sep 2022 00:00:00 GMT</pubDate>
-            <description><![CDATA[npm install 할 때, 설치한 순서대로 작성되는 package.json을 알파벳 순서로 정리하는 방법입니다.]]></description>
-            <content:encoded><![CDATA[<p>npm install 할 때, 설치한 순서대로 작성되는 package.json을 알파벳 순서로 정리하는 방법입니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/npm-sort-package-json.webp" alt="npm-sort-package-json"></figure>
-<p>package.json 의 dependencies 나 devDependencies 가 알파벳 순서대로 정리하고 싶을 때, package.json의 키 순서가 섞여있어서 license 등 특정 키를 찾기 어려워 할 때 터미널에서 <strong>npx sort-package-json</strong>만 입력해주면 해당 디렉토리 내 package.json 내용이 정리가 됩니다.</p>
-<h2 class="anchor anchorWithStickyNavbar_roEl" id="사용방법">사용방법<a href="https://kgenots.com/blog/npm-sort-package-json#%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="사용방법에 대한 직접 링크" title="사용방법에 대한 직접 링크">​</a></h2>
-<div class="codeBlockContainer_hhXh theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_N9Yv"><pre tabindex="0" class="prism-code language-text codeBlock_ydqk thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_jy1b"><span class="token-line" style="color:#bfc7d5"><span class="token plain">npx sort-package-json</span><br></span></code></pre><div class="buttonGroup_EaKk"><button type="button" aria-label="클립보드에 코드 복사" title="복사" class="clean-btn"><span class="copyButtonIcons_T3uu" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_TsL9"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_Dk5N"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
-<p>package.json 파일이 존재하는 폴더에서 터미널을 열고 위 명령어를 실행합니다.</p>
-<h2 class="anchor anchorWithStickyNavbar_roEl" id="참고">참고<a href="https://kgenots.com/blog/npm-sort-package-json#%EC%B0%B8%EA%B3%A0" class="hash-link" aria-label="참고에 대한 직접 링크" title="참고에 대한 직접 링크">​</a></h2>
-<p><a href="https://github.com/keithamus/sort-package-json" target="_blank" rel="noopener noreferrer">https://github.com/keithamus/sort-package-json</a></p>
-<div class="link-preview-container"><a href="https://github.com/keithamus/sort-package-json"></a><div class="link-preview-top"><div class="link-preview-image"><img src="https://opengraph.githubassets.com/9baae571fe9d426d5a6ba3cc1cef97baa5b8f9497fce5a54886a46088e04548f/keithamus/sort-package-json" alt="Article Thumbnail"></div><div class="link-preview-content"><div class="link-preview-title">GitHub - keithamus/sort-package-json: Sort an Object or package.json based on the well-known package.json keys</div><div class="link-preview-description">Sort an Object or package.json based on the well-known package.json keys - GitHub - keithamus/sort-package-json: Sort an Object or package.json based on the well-known package.json keys</div></div></div></div>]]></content:encoded>
-            <category>NPM</category>
-        </item>
-        <item>
             <title><![CDATA[npm 사용하지 않는 모듈 제거하는 방법 (depcheck)]]></title>
             <link>https://kgenots.com/blog/npm-remove-unused-packages</link>
             <guid>https://kgenots.com/blog/npm-remove-unused-packages</guid>
@@ -600,6 +583,23 @@ Single-thread 환경에서 동시에 여러 동작을 하기 위해(멀티쓰레
 <div class="link-preview-container"><a href="https://github.com/depcheck/depcheck"></a><div class="link-preview-top"><div class="link-preview-image"><img src="https://opengraph.githubassets.com/c2050797da1d240a5d0f73c6995e3f7ca7044ccb6585a61df8c72f8d1065c9c0/depcheck/depcheck" alt="Article Thumbnail"></div><div class="link-preview-content"><div class="link-preview-title"><p>GitHub - depcheck/depcheck: Check your npm module for unused
 dependencies</p></div><div class="link-preview-description"><p>Check your npm module for unused dependencies. Contribute to
 depcheck/depcheck development by creating an account on GitHub.</p></div></div></div></div>]]></content:encoded>
+            <category>NPM</category>
+        </item>
+        <item>
+            <title><![CDATA[npm package.json 순서 정렬하는 방법 (sort-package-json)]]></title>
+            <link>https://kgenots.com/blog/npm-sort-package-json</link>
+            <guid>https://kgenots.com/blog/npm-sort-package-json</guid>
+            <pubDate>Thu, 08 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[npm install 할 때, 설치한 순서대로 작성되는 package.json을 알파벳 순서로 정리하는 방법입니다.]]></description>
+            <content:encoded><![CDATA[<p>npm install 할 때, 설치한 순서대로 작성되는 package.json을 알파벳 순서로 정리하는 방법입니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/npm-sort-package-json.webp" alt="npm-sort-package-json"></figure>
+<p>package.json 의 dependencies 나 devDependencies 가 알파벳 순서대로 정리하고 싶을 때, package.json의 키 순서가 섞여있어서 license 등 특정 키를 찾기 어려워 할 때 터미널에서 <strong>npx sort-package-json</strong>만 입력해주면 해당 디렉토리 내 package.json 내용이 정리가 됩니다.</p>
+<h2 class="anchor anchorWithStickyNavbar_roEl" id="사용방법">사용방법<a href="https://kgenots.com/blog/npm-sort-package-json#%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="사용방법에 대한 직접 링크" title="사용방법에 대한 직접 링크">​</a></h2>
+<div class="codeBlockContainer_hhXh theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_N9Yv"><pre tabindex="0" class="prism-code language-text codeBlock_ydqk thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_jy1b"><span class="token-line" style="color:#bfc7d5"><span class="token plain">npx sort-package-json</span><br></span></code></pre><div class="buttonGroup_EaKk"><button type="button" aria-label="클립보드에 코드 복사" title="복사" class="clean-btn"><span class="copyButtonIcons_T3uu" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_TsL9"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_Dk5N"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+<p>package.json 파일이 존재하는 폴더에서 터미널을 열고 위 명령어를 실행합니다.</p>
+<h2 class="anchor anchorWithStickyNavbar_roEl" id="참고">참고<a href="https://kgenots.com/blog/npm-sort-package-json#%EC%B0%B8%EA%B3%A0" class="hash-link" aria-label="참고에 대한 직접 링크" title="참고에 대한 직접 링크">​</a></h2>
+<p><a href="https://github.com/keithamus/sort-package-json" target="_blank" rel="noopener noreferrer">https://github.com/keithamus/sort-package-json</a></p>
+<div class="link-preview-container"><a href="https://github.com/keithamus/sort-package-json"></a><div class="link-preview-top"><div class="link-preview-image"><img src="https://opengraph.githubassets.com/9baae571fe9d426d5a6ba3cc1cef97baa5b8f9497fce5a54886a46088e04548f/keithamus/sort-package-json" alt="Article Thumbnail"></div><div class="link-preview-content"><div class="link-preview-title">GitHub - keithamus/sort-package-json: Sort an Object or package.json based on the well-known package.json keys</div><div class="link-preview-description">Sort an Object or package.json based on the well-known package.json keys - GitHub - keithamus/sort-package-json: Sort an Object or package.json based on the well-known package.json keys</div></div></div></div>]]></content:encoded>
             <category>NPM</category>
         </item>
     </channel>
