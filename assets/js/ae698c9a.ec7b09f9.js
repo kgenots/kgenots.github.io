@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkgithub_web=self.webpackChunkgithub_web||[]).push([[3627],{67203:e=>{e.exports=JSON.parse('{"name":"docusaurus-plugin-content-docs","id":"canvas"}')}}]);
