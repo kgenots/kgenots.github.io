@@ -1,4 +1,6 @@
 User-agent: *
-Disallow: /tags/
-Disallow: /archive/
+Disallow: /blog/tags/
+Disallow: /blog/archive/
+Disallow: /blog/page/
+Disallow: /search
 Sitemap: https://kgenots.com/sitemap.xml

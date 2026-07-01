@@ -130,6 +130,65 @@
             <category>Ops</category>
         </item>
         <item>
+            <title><![CDATA[모노레포 워크스페이스 도구 이해하기 (공유 패키지와 증분 빌드)]]></title>
+            <link>https://kgenots.com/blog/monorepo-workspace-tooling</link>
+            <guid>https://kgenots.com/blog/monorepo-workspace-tooling</guid>
+            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[모노레포에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.]]></description>
+            <content:encoded><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#monorepo">모노레포</a>에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.</p>
+<p>결론부터 말하면, 모노레포 도구는 <span style="background-color:#fff5b1">두 층위로 나뉩니다.</span> 패키지 매니저의 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 바뀐 부분만 다시 빌드(증분 빌드)와 캐시를 담당합니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="워크스페이스-도구란">워크스페이스 도구란<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%9B%8C%ED%81%AC%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4-%EB%8F%84%EA%B5%AC%EB%9E%80" class="hash-link" aria-label="워크스페이스 도구란에 대한 직접 링크" title="워크스페이스 도구란에 대한 직접 링크" translate="no">​</a></h2>
+<p>워크스페이스 도구는 한 레포 안의 여러 패키지를 함께 관리하게 해 주는 도구입니다. 공통 코드를 여러 앱이 나눠 쓰게 연결하고, 무엇을 다시 빌드할지 정리해 줍니다.</p>
+<p>요리에 비유하면, 여러 메뉴(앱)가 <b>공용 재료 창고(공유 패키지)</b>를 함께 쓰고, 재료가 바뀌면 <b>그 재료를 쓰는 메뉴만 다시 조리</b>하는 것과 같습니다. 창고 연결과 "다시 조리할 메뉴 고르기"는 서로 다른 일입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="두-층위로-나눠-보기">두 층위로 나눠 보기<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%91%90-%EC%B8%B5%EC%9C%84%EB%A1%9C-%EB%82%98%EB%88%A0-%EB%B3%B4%EA%B8%B0" class="hash-link" aria-label="두 층위로 나눠 보기에 대한 직접 링크" title="두 층위로 나눠 보기에 대한 직접 링크" translate="no">​</a></h2>
+<p>도구를 두 층위로 나눠 보면 역할이 분명해집니다.</p>
+<table><thead><tr><th>층위</th><th>역할</th><th>대표 도구</th></tr></thead><tbody><tr><td><strong>패키지 매니저 워크스페이스</strong></td><td>공유 패키지를 연결(의존성)</td><td>pnpm/yarn workspaces, uv, Cargo, Go workspace</td></tr><tr><td><strong>빌드 오케스트레이터</strong></td><td>task 그래프 + 증분 빌드·캐시</td><td>Turborepo, Nx</td></tr></tbody></table>
+<p>둘은 함께 씁니다. 패키지 매니저가 "무엇을 공유하는지"를 알고, 오케스트레이터가 "무엇을 다시 만들지"를 정합니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-2.webp" alt="패키지 매니저 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 증분 빌드와 캐시를 담당하는 두 층위 구분"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="공유-패키지-연결-패키지-매니저">공유 패키지 연결 (패키지 매니저)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EA%B3%B5%EC%9C%A0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EC%97%B0%EA%B2%B0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EB%A7%A4%EB%8B%88%EC%A0%80" class="hash-link" aria-label="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" title="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" translate="no">​</a></h2>
+<p>첫 층위는 공유 패키지를 연결하는 일입니다. 워크스페이스를 선언하면, 한 패키지를 고쳤을 때 그것을 쓰는 앱이 <b>즉시 같은 코드를 봅니다.</b> 버전을 올려 배포하고 다시 받아오는 왕복이 사라집니다.</p>
+<div class="language-yaml codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-yaml codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># pnpm-workspace.yaml</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token key atrule">packages</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"apps/*"</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"packages/*"</span><br></div></code></pre></div></div>
+<div class="language-json codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-json codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// apps/web/package.json (공유 패키지를 그대로 의존)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"dependencies"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"@acme/ui"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"workspace:*"</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><br></div></code></pre></div></div>
+<p>이 연결이 <a class="" href="https://kgenots.com/blog/monorepo-15-service-msa">모노레포의 가장 큰 이점</a>입니다. 공유 코드와 계약이 한 커밋에서 같이 움직입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="바뀐-것만-빌드-오케스트레이터">바뀐 것만 빌드 (오케스트레이터)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%B0%94%EB%80%90-%EA%B2%83%EB%A7%8C-%EB%B9%8C%EB%93%9C-%EC%98%A4%EC%BC%80%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%9D%B4%ED%84%B0" class="hash-link" aria-label="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" title="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" translate="no">​</a></h2>
+<p>둘째 층위는 바뀐 것만 다시 빌드하는 일입니다. 빌드 오케스트레이터는 패키지 사이의 의존 그래프를 알고 있어서, <span style="background-color:#fff5b1">바뀐 패키지와 그 영향을 받는 앱만 다시 빌드</span>하고 나머지는 캐시 결과를 씁니다.</p>
+<div class="language-bash codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-bash codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">turbo run build       # 바뀐 것 + 영향받는 것만 빌드, 나머지는 캐시</span><br></div></code></pre></div></div>
+<p>핵심은 <strong>캐시</strong>입니다. 입력(소스·의존·설정)이 그대로면 이전 빌드 결과를 그대로 가져옵니다. 전체를 매번 다시 빌드하지 않으니, 레포가 커져도 피드백이 느려지지 않습니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-3.webp" alt="변경된 공유 패키지와 그것을 의존하는 앱만 다시 빌드하고, 무관한 패키지·앱은 캐시 결과를 가져오는 증분 빌드"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정">흔한 함정<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="흔한 함정에 대한 직접 링크" title="흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>순환 의존</strong>: 패키지 A가 B를, B가 다시 A를 의존하면 그래프가 꼬여 증분 빌드가 어긋납니다. <b>의존 방향을 한쪽으로</b> 유지합니다.</li>
+<li class=""><strong>캐시 키를 잘못 잡음</strong>: 빌드에 영향을 주는 입력(환경 변수·설정 파일 등)을 캐시 키에서 빠뜨리면, <span style="background-color:#ffdce0">바뀌었는데도 옛 캐시를 가져옵니다.</span> 입력을 빠짐없이 키에 포함합니다.</li>
+<li class=""><strong>결국 전부 빌드</strong>: 의존을 너무 넓게 걸면 작은 변경에도 전부 다시 빌드됩니다. 공유 패키지를 잘게 나눠 영향 범위를 좁힙니다.</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/monorepo-workspace-tooling#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>패키지 매니저 워크스페이스만 있으면 안 되나요?</strong>
+<ul>
+<li class="">공유는 됩니다. 다만 "무엇을 다시 빌드할지"는 직접 관리해야 합니다. 레포가 커지면 증분 빌드·캐시를 주는 오케스트레이터의 이점이 커집니다.</li>
+</ul>
+</li>
+<li class=""><strong>Turborepo와 Nx 중 무엇을 고르나요?</strong>
+<ul>
+<li class="">핵심 기능(task 그래프·캐시)은 비슷합니다. 설정이 가볍고 단순하면 Turborepo, 플러그인과 코드 생성까지 폭넓게 쓰려면 Nx가 흔한 선택입니다.</li>
+</ul>
+</li>
+<li class=""><strong>JS가 아닌 언어도 되나요?</strong>
+<ul>
+<li class="">됩니다. uv(파이썬), Cargo(러스트), Go workspace가 같은 "워크스페이스" 개념을 제공합니다. 오케스트레이터도 언어 무관하게 task를 묶을 수 있습니다.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">Turborepo / Nx Docs: Task Graph / Caching</li>
+<li class="">pnpm / uv / Cargo / Go Workspaces</li>
+</ul>]]></content:encoded>
+            <category>Reference</category>
+            <category>Architecture</category>
+            <category>Ops</category>
+        </item>
+        <item>
             <title><![CDATA[gRPC 헬스체크, HTTP만으론 부족한 이유]]></title>
             <link>https://kgenots.com/blog/grpc-health-check</link>
             <guid>https://kgenots.com/blog/grpc-health-check</guid>
@@ -189,252 +248,6 @@
             <category>Reference</category>
             <category>Backend</category>
             <category>gRPC</category>
-        </item>
-        <item>
-            <title><![CDATA[OPA로 API 권한(인가)을 외부화하기]]></title>
-            <link>https://kgenots.com/blog/opa-policy-authz</link>
-            <guid>https://kgenots.com/blog/opa-policy-authz</guid>
-            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[권한 판단 로직을 각 서비스 코드에 흩지 않고, 정책 엔진(OPA)으로 빼서 한곳에서 결정하게 만드는 방법을 정리합니다.]]></description>
-            <content:encoded><![CDATA[<p>권한 판단 로직을 각 서비스 코드에 흩지 않고, 정책 엔진(<a class="glossary-term-link" href="https://kgenots.com/glossary#opa">OPA</a>)으로 빼서 한곳에서 결정하게 만드는 방법을 정리합니다.</p>
-<p>결론부터 말하면, <span style="background-color:#fff5b1">"이 사용자가 이 동작을 해도 되나"라는 판단을 코드 곳곳에 흩지 말고, 정책 엔진(OPA) 한곳으로 빼냅니다.</span> 서비스는 묻기만 하고, 허용 여부는 정책이 답합니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="인증과-인가는-다르다">인증과 인가는 다르다<a href="https://kgenots.com/blog/opa-policy-authz#%EC%9D%B8%EC%A6%9D%EA%B3%BC-%EC%9D%B8%EA%B0%80%EB%8A%94-%EB%8B%A4%EB%A5%B4%EB%8B%A4" class="hash-link" aria-label="인증과 인가는 다르다에 대한 직접 링크" title="인증과 인가는 다르다에 대한 직접 링크" translate="no">​</a></h2>
-<p>먼저 용어를 구분합니다. 인증(authentication)은 "당신이 누구인지" 확인하는 것이고, 인가(authorization)는 "그 사람이 이 동작을 해도 되는지" 결정하는 것입니다. 이 글은 인가를 다룹니다.</p>
-<p>토큰으로 로그인 사용자를 확인했더라도(인증), 그 사람이 특정 자원을 수정해도 되는지(인가)는 별개의 판단입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="권한-결정을-왜-밖으로-빼나">권한 결정을 왜 밖으로 빼나<a href="https://kgenots.com/blog/opa-policy-authz#%EA%B6%8C%ED%95%9C-%EA%B2%B0%EC%A0%95%EC%9D%84-%EC%99%9C-%EB%B0%96%EC%9C%BC%EB%A1%9C-%EB%B9%BC%EB%82%98" class="hash-link" aria-label="권한 결정을 왜 밖으로 빼나에 대한 직접 링크" title="권한 결정을 왜 밖으로 빼나에 대한 직접 링크" translate="no">​</a></h2>
-<p>권한 판단을 코드에 직접 넣으면, <span style="background-color:#ffdce0">같은 규칙이 서비스마다 조금씩 다르게 흩어집니다.</span> 규칙이 바뀌면 여러 곳을 동시에 고쳐야 하고, 어디가 어떤 규칙을 쓰는지 한눈에 보이지 않습니다.</p>
-<p>건물 출입에 비유할 수 있습니다. 문마다 경비원이 각자 규칙을 외워 판단하면, 규칙이 바뀔 때 모든 경비원을 다시 교육해야 합니다. 대신 <b>중앙 통제실 한 곳에 무전으로 물어보면</b>, 규칙은 통제실만 바꾸면 됩니다. OPA가 그 통제실 역할입니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/opa-policy-authz-2.webp" alt="권한 규칙이 서비스마다 흩어진 경우와, OPA 한곳으로 외부화해 각 서비스가 묻기만 하는 구조 비교"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="pep와-pdp-역할-나누기">PEP와 PDP, 역할 나누기<a href="https://kgenots.com/blog/opa-policy-authz#pep%EC%99%80-pdp-%EC%97%AD%ED%95%A0-%EB%82%98%EB%88%84%EA%B8%B0" class="hash-link" aria-label="PEP와 PDP, 역할 나누기에 대한 직접 링크" title="PEP와 PDP, 역할 나누기에 대한 직접 링크" translate="no">​</a></h2>
-<p>권한 외부화는 역할을 둘로 나눕니다.</p>
-<table><thead><tr><th>역할</th><th>하는 일</th><th>위치</th></tr></thead><tbody><tr><td><strong>PEP</strong> (정책 시행 지점)</td><td>요청을 가로채 "물어보고" 결과를 시행</td><td>각 서비스(또는 게이트웨이)</td></tr><tr><td><strong>PDP</strong> (정책 결정 지점)</td><td>정책을 평가해 allow/deny를 "답함"</td><td>OPA</td></tr></tbody></table>
-<p>서비스(PEP)는 판단하지 않습니다. 요청 정보를 모아 OPA(PDP)에 묻고, 돌아온 답대로 통과시키거나 막습니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="정책-작성과-평가-방법">정책 작성과 평가 (방법)<a href="https://kgenots.com/blog/opa-policy-authz#%EC%A0%95%EC%B1%85-%EC%9E%91%EC%84%B1%EA%B3%BC-%ED%8F%89%EA%B0%80-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="정책 작성과 평가 (방법)에 대한 직접 링크" title="정책 작성과 평가 (방법)에 대한 직접 링크" translate="no">​</a></h2>
-<p>OPA의 정책은 Rego라는 언어로 작성합니다. "어떤 입력이면 허용인지"를 선언합니다.</p>
-<div class="language-rego codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-rego codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">package authz</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">default allow := false          # 기본은 거부 (fail-close)</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">allow if {</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    input.action == "GetUser"</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    input.subject.role == "admin"</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">}</span><br></div></code></pre></div></div>
-<p>PEP는 요청에서 <b>주체·동작·자원</b>을 모아 OPA에 평가를 요청합니다.</p>
-<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># PEP: 요청 정보를 모아 OPA 에 질의</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">decision </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> http_post</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token string" style="color:rgb(195, 232, 141)">"http://opa:8181/v1/data/authz/allow"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    json</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token string" style="color:rgb(195, 232, 141)">"input"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token string" style="color:rgb(195, 232, 141)">"subject"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token string" style="color:rgb(195, 232, 141)">"id"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> user_id</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"role"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> role</span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token string" style="color:rgb(195, 232, 141)">"action"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> operation_id</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">     </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 예: "GetUser"</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token string" style="color:rgb(195, 232, 141)">"resource"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token string" style="color:rgb(195, 232, 141)">"type"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"user"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"id"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> target_id</span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">if</span><span class="token plain"> </span><span class="token keyword" style="font-style:italic">not</span><span class="token plain"> decision</span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token string" style="color:rgb(195, 232, 141)">"result"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token keyword" style="font-style:italic">raise</span><span class="token plain"> Forbidden</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain">              </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># deny 면 차단</span><br></div></code></pre></div></div>
-<p>정책 파일은 번들로 묶어 OPA에 배포합니다. 규칙이 바뀌면 <b>코드 배포 없이 정책 번들만</b> 갱신하면 됩니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/opa-policy-authz-3.webp" alt="PEP가 주체·동작·자원을 모아 OPA에 질의하고, 정책 평가 결과가 allow면 통과 deny면 차단되는 흐름"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정">흔한 함정<a href="https://kgenots.com/blog/opa-policy-authz#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="흔한 함정에 대한 직접 링크" title="흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>정책과 코드의 동기화</strong>: 새 엔드포인트(동작)를 추가했는데 정책에 그 동작을 빠뜨리면, 기본 거부(fail-close)에 걸려 막힙니다. <b>엔드포인트 추가 시 정책에도 동작을 등록</b>하는 절차를 둡니다.</li>
-<li class=""><strong>정책 번들 배포 누락</strong>: 정책을 고쳤는데 OPA에 새 번들이 안 올라가면, OPA는 옛 규칙으로 계속 판단합니다. 배포 후 <b>실제 적용됐는지 확인</b>합니다.</li>
-<li class=""><strong>fail-open vs fail-close</strong>: OPA가 응답하지 않을 때 통과시킬지(open) 막을지(close)를 정해야 합니다. <span style="background-color:#ffdce0">보안이 중요하면 기본은 거부(close)</span>입니다.</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/opa-policy-authz#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>권한 체크를 게이트웨이에 두나요, 서비스에 두나요?</strong>
-<ul>
-<li class="">둘 다 가능합니다. 게이트웨이에 PEP를 두면 공통 처리가 쉽고, 서비스에 두면 자원 단위의 세밀한 판단이 쉽습니다. 자원 소유권 같은 세밀한 규칙은 서비스 쪽 PEP가 유리합니다.</li>
-</ul>
-</li>
-<li class=""><strong>OPA 호출이 매 요청마다면 느리지 않나요?</strong>
-<ul>
-<li class="">OPA를 같은 노드(사이드카)에 두면 호출 비용이 작습니다. 그래도 부담되면 결정 결과를 짧게 캐시합니다.</li>
-</ul>
-</li>
-<li class=""><strong>꼭 OPA여야 하나요?</strong>
-<ul>
-<li class="">아니요. 핵심은 "권한 결정을 코드 밖으로 빼서 한곳에서 관리"하는 것입니다. OPA는 그 표준적인 구현일 뿐입니다.</li>
-</ul>
-</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/opa-policy-authz#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">Open Policy Agent (OPA) Docs: Rego / Bundles</li>
-<li class="">NIST: PEP / PDP (정책 시행·결정 지점)</li>
-</ul>]]></content:encoded>
-            <category>Reference</category>
-            <category>Backend</category>
-            <category>Security</category>
-        </item>
-        <item>
-            <title><![CDATA[SPA를 한 번 빌드해 여러 환경에 띄우기 (런타임 설정)]]></title>
-            <link>https://kgenots.com/blog/spa-runtime-config</link>
-            <guid>https://kgenots.com/blog/spa-runtime-config</guid>
-            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[API 주소처럼 환경마다 다른 값을, 빌드에 박지 않고 앱이 켜질 때 읽게 만들어 한 번 빌드로 여러 환경에 배포하는 방법을 정리합니다.]]></description>
-            <content:encoded><![CDATA[<p>API 주소처럼 환경마다 다른 값을, 빌드에 박지 않고 앱이 켜질 때 읽게 만들어 한 번 빌드로 여러 환경에 배포하는 방법을 정리합니다.</p>
-<p>결론부터 말하면, <span style="background-color:#fff5b1">환경별 값은 빌드에 박지 말고, 앱이 켜질 때 읽는 런타임 설정 파일로 분리</span>합니다. 그러면 앱은 한 번만 빌드하고, 설정 파일만 환경에 맞게 갈아 끼우면 됩니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="빌드타임-주입과-런타임-주입-무엇이-다른가">빌드타임 주입과 런타임 주입, 무엇이 다른가<a href="https://kgenots.com/blog/spa-runtime-config#%EB%B9%8C%EB%93%9C%ED%83%80%EC%9E%84-%EC%A3%BC%EC%9E%85%EA%B3%BC-%EB%9F%B0%ED%83%80%EC%9E%84-%EC%A3%BC%EC%9E%85-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%A4%EB%A5%B8%EA%B0%80" class="hash-link" aria-label="빌드타임 주입과 런타임 주입, 무엇이 다른가에 대한 직접 링크" title="빌드타임 주입과 런타임 주입, 무엇이 다른가에 대한 직접 링크" translate="no">​</a></h2>
-<p>차이는 환경별 값을 <strong>언제 결정하느냐</strong>입니다. 빌드타임 주입은 빌드할 때 값을 코드에 박아 넣고, 런타임 주입은 앱이 브라우저에서 켜질 때 값을 읽습니다.</p>
-<table><thead><tr><th>구분</th><th>빌드타임 주입</th><th>런타임 주입</th></tr></thead><tbody><tr><td>값이 정해지는 시점</td><td>빌드할 때</td><td>앱이 켜질 때</td></tr><tr><td>환경이 N개면</td><td><span style="background-color:#ffdce0">N번 빌드</span></td><td>한 번 빌드 + 설정 N개</td></tr><tr><td>대표 예</td><td><code>import.meta.env.VITE_*</code></td><td><code>window.__ENV__</code></td></tr></tbody></table>
-<p>빌드타임 주입(<code>VITE_*</code>, <code>REACT_APP_*</code> 등)은 편하지만, 값이 결과물에 박혀 버립니다. <b>환경이 늘면 그만큼 다시 빌드</b>해야 합니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="왜-런타임-설정인가">왜 런타임 설정인가<a href="https://kgenots.com/blog/spa-runtime-config#%EC%99%9C-%EB%9F%B0%ED%83%80%EC%9E%84-%EC%84%A4%EC%A0%95%EC%9D%B8%EA%B0%80" class="hash-link" aria-label="왜 런타임 설정인가에 대한 직접 링크" title="왜 런타임 설정인가에 대��한 직접 링크" translate="no">​</a></h2>
-<p>런타임 설정이 필요한 이유는, 같은 앱을 환경마다 다른 값으로 띄워야 할 때 매번 다시 빌드할 수 없기 때문입니다. 특히 고객사마다 API 주소가 다른 온프레미스 배포에서는 빌드타임 주입이 곧 무너집니다.</p>
-<p>한 번 인쇄한 안내 책자에 비유할 수 있습니다. 본문(앱)은 한 번만 찍고, <b>마지막 주소 페이지(설정)만 환경마다 끼워 넣는</b> 것입니다. 책자를 통째로 다시 찍지 않아도 됩니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="구현-방법">구현 방법<a href="https://kgenots.com/blog/spa-runtime-config#%EA%B5%AC%ED%98%84-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="구현 방법에 대한 직접 링크" title="구현 방법에 대한 직접 링크" translate="no">​</a></h2>
-<p>핵심은 빌드 결과물 바깥에 설정 파일을 따로 두고, 앱이 시작할 때 그 파일을 읽게 하는 것입니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/spa-runtime-config-2.webp" alt="빌드타임 주입은 환경마다 다시 빌드하고, 런타임 주입은 한 번 빌드한 뒤 환경별 설정 파일만 갈아 끼우는 비교"></figure>
-<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="1-설정-파일을-따로-둔다">1. 설정 파일을 따로 둔다<a href="https://kgenots.com/blog/spa-runtime-config#1-%EC%84%A4%EC%A0%95-%ED%8C%8C%EC%9D%BC%EC%9D%84-%EB%94%B0%EB%A1%9C-%EB%91%94%EB%8B%A4" class="hash-link" aria-label="1. 설정 파일을 따로 둔다에 대한 직접 링크" title="1. 설정 파일을 따로 둔다에 대한 직접 링크" translate="no">​</a></h3>
-<p>빌드에 포함하지 않는 <code>env-config.js</code>를 만들어 전역 객체에 값을 싣습니다.</p>
-<div class="language-js codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-js codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// env-config.js  (빌드 산출물이 아니라 배포 시 갈아 끼우는 파일)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token dom variable" style="color:rgb(191, 199, 213)">window</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token property-access">__ENV__</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token constant" style="color:rgb(130, 170, 255)">API_BASE_URL</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"https://api.example.com"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">;</span><br></div></code></pre></div></div>
-<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="2-indexhtml에서-먼저-읽는다">2. index.html에서 먼저 읽는다<a href="https://kgenots.com/blog/spa-runtime-config#2-indexhtml%EC%97%90%EC%84%9C-%EB%A8%BC%EC%A0%80-%EC%9D%BD%EB%8A%94%EB%8B%A4" class="hash-link" aria-label="2. index.html에서 먼저 읽는다에 대한 직접 링크" title="2. index.html에서 먼저 읽는다에 대한 직접 링크" translate="no">​</a></h3>
-<p>앱 번들보다 먼저 설정 파일을 로드합니다.</p>
-<div class="language-html codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-html codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag" style="color:rgb(255, 85, 114)"> </span><span class="token tag attr-name" style="color:rgb(255, 203, 107)">src</span><span class="token tag attr-value punctuation attr-equals" style="color:rgb(199, 146, 234)">=</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag attr-value" style="color:rgb(255, 85, 114)">/env-config.js</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><span class="token script"></span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;/</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag" style="color:rgb(255, 85, 114)"> </span><span class="token tag attr-name" style="color:rgb(255, 203, 107)">type</span><span class="token tag attr-value punctuation attr-equals" style="color:rgb(199, 146, 234)">=</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag attr-value" style="color:rgb(255, 85, 114)">module</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag" style="color:rgb(255, 85, 114)"> </span><span class="token tag attr-name" style="color:rgb(255, 203, 107)">src</span><span class="token tag attr-value punctuation attr-equals" style="color:rgb(199, 146, 234)">=</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag attr-value" style="color:rgb(255, 85, 114)">/assets/index.js</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><span class="token script"></span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;/</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><br></div></code></pre></div></div>
-<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="3-코드에서-사용한다">3. 코드에서 사용한다<a href="https://kgenots.com/blog/spa-runtime-config#3-%EC%BD%94%EB%93%9C%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%9C%EB%8B%A4" class="hash-link" aria-label="3. 코드에서 사용한다에 대한 직접 링크" title="3. 코드에서 사용한다에 대한 직접 링크" translate="no">​</a></h3>
-<div class="language-ts codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-ts codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">const</span><span class="token plain"> </span><span class="token constant" style="color:rgb(130, 170, 255)">API_BASE_URL</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  window</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">__ENV__</span><span class="token operator" style="color:rgb(137, 221, 255)">?.</span><span class="token constant" style="color:rgb(130, 170, 255)">API_BASE_URL</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">??</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"http://localhost:8080"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">;</span><span class="token plain"> </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// 로컬 기본값</span><br></div></code></pre></div></div>
-<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="4-환경마다-설정-파일만-교체">4. 환경마다 설정 파일만 교체<a href="https://kgenots.com/blog/spa-runtime-config#4-%ED%99%98%EA%B2%BD%EB%A7%88%EB%8B%A4-%EC%84%A4%EC%A0%95-%ED%8C%8C%EC%9D%BC%EB%A7%8C-%EA%B5%90%EC%B2%B4" class="hash-link" aria-label="4. 환경마다 설정 파일만 교체에 대한 직접 링크" title="4. 환경마다 설정 파일만 교체에 대한 직접 링크" translate="no">​</a></h3>
-<p>배포 환경에서 <code>env-config.js</code>만 그 환경 값으로 바꿉니다. 쿠버네티스라면 ConfigMap을 볼륨으로 마운트해 이 파일을 덮어쓰는 식입니다. <b>앱 번들은 그대로</b>입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정-cdn-캐시">흔한 함정 (CDN 캐시)<a href="https://kgenots.com/blog/spa-runtime-config#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95-cdn-%EC%BA%90%EC%8B%9C" class="hash-link" aria-label="흔한 함정 (CDN 캐시)에 대한 직접 링크" title="흔한 함정 (CDN 캐시)에 대한 직접 링크" translate="no">​</a></h2>
-<p>가장 자주 데이는 함정은 CDN 캐시입니다. 화면 파일은 빠른 응답을 위해 CDN에 캐시되는데, <span style="background-color:#ffdce0">설정 파일까지 캐시되면 값을 바꿔도 옛 설정이 계속 내려갑니다.</span></p>
-<p>해결은 설정 파일만 캐시를 끄는 것입니다.</p>
-<div class="language-text codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-text codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">Cache-Control: no-store      # env-config.js 에만 적용</span><br></div></code></pre></div></div>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/spa-runtime-config-3.webp" alt="CDN이 설정 파일까지 캐시해 옛 값이 내려가는 문제와, 설정 파일에만 no-store를 적용한 해결"></figure>
-<p>그 외 주의점:</p>
-<ul>
-<li class=""><strong>빌드타임과 런타임을 섞지 않기</strong>: <code>import.meta.env</code>와 <code>window.__ENV__</code>를 한 값에 섞으면 어느 쪽이 적용됐는지 헷갈립니다. 환경별 값은 런타임으로 일원화합니다.</li>
-<li class=""><strong>로컬 기본값 두기</strong>: 설정 파일이 없을 때를 대비해 코드에 안전한 기본값(<code>?? localhost</code>)을 둡니다.</li>
-<li class=""><strong>민감 정보 금지</strong>: <code>env-config.js</code>는 브라우저가 그대로 읽습니다. 비밀 키 같은 민감 값은 절대 넣지 않습니다.</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/spa-runtime-config#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>Next.js 같은 SSR도 같은 방법인가요?</strong>
-<ul>
-<li class="">SSR은 서버에서 환경 변수를 직접 읽을 수 있어 사정이 다릅니다. 이 방법은 정적으로 빌드되는 SPA(CSR)에서 특히 유용합니다.</li>
-</ul>
-</li>
-<li class=""><strong><code>.env</code> 파일을 여러 개 두면 안 되나요?</strong>
-<ul>
-<li class=""><code>.env.production</code> 등은 결국 빌드타임에 박힙니다. 환경이 빌드 후에 정해지는 경우(온프레미스 등)에는 런타임 설정이 필요합니다.</li>
-</ul>
-</li>
-<li class=""><strong>설정 값이 많아지면요?</strong>
-<ul>
-<li class=""><code>window.__ENV__</code> 객체에 모읍니다. 타입 안전을 위해 한 곳에서 읽어 검증한 뒤 앱 전역에 제공하는 래퍼를 두면 좋습니다.</li>
-</ul>
-</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/spa-runtime-config#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">MDN: <code>Cache-Control</code></li>
-<li class="">12-Factor App: Config</li>
-</ul>]]></content:encoded>
-            <category>Reference</category>
-            <category>Frontend</category>
-            <category>Ops</category>
-        </item>
-        <item>
-            <title><![CDATA[NATS JetStream 스트림 보관 정책 이해하기]]></title>
-            <link>https://kgenots.com/blog/nats-jetstream-retention</link>
-            <guid>https://kgenots.com/blog/nats-jetstream-retention</guid>
-            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[NATS JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.]]></description>
-            <content:encoded><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#nats">NATS</a> JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.</p>
-<p>결론부터 말하면, <span style="background-color:#fff5b1">스트림 보관 기간(<code>max_age</code>)은 소비자가 메시지를 가져가는 주기보다 넉넉히 길게</span> 잡아야 합니다. 짧으면 소비하기도 전에 메시지가 지워집니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="jetstream-스트림과-보관-정책이란">JetStream 스트림과 보관 정책이란<a href="https://kgenots.com/blog/nats-jetstream-retention#jetstream-%EC%8A%A4%ED%8A%B8%EB%A6%BC%EA%B3%BC-%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85%EC%9D%B4%EB%9E%80" class="hash-link" aria-label="JetStream 스트림과 보관 정책이란에 대한 직접 링크" title="JetStream 스트림과 보관 정책이란에 대한 직접 링크" translate="no">​</a></h2>
-<p>JetStream 스트림은 NATS가 메시지를 디스크에 저장해 두는 저장소입니다. 일반 NATS는 메시지를 흘려보내고 끝이지만, JetStream은 스트림에 쌓아 두고 소비자가 나중에 가져갈 수 있게 합니다.</p>
-<p>보관 정책(retention policy)은 <b>이 쌓인 메시지를 언제 지울지</b>를 정하는 규칙입니다. 모든 메시지를 영원히 둘 수는 없으므로, 스트림마다 지우는 기준이 필요합니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="보관-정책-세-가지">보관 정책 세 가지<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85-%EC%84%B8-%EA%B0%80%EC%A7%80" class="hash-link" aria-label="보관 정책 세 가지에 대한 직접 링크" title="보관 정책 세 가지에 대한 직접 링크" translate="no">​</a></h2>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention.webp" alt="NATS JetStream 보관 정책 세 가지와 메시지가 지워지는 조건"></figure>
-<p>NATS JetStream의 보관 정책은 세 가지입니다.</p>
-<table><thead><tr><th>정책</th><th>메시지를 지우는 시점</th><th>쓰는 곳</th></tr></thead><tbody><tr><td><strong>Limits</strong> (기본)</td><td>한도(개수·용량·기간)에 도달하면 오래된 것부터</td><td>여러 소비자가 같은 메시지를 각자 읽는 경우</td></tr><tr><td><strong>Interest</strong></td><td>관심 있는 모든 소비자가 ack하면</td><td>구독자 모두 처리한 뒤 비워도 될 때</td></tr><tr><td><strong>WorkQueue</strong></td><td>소비자 하나가 ack하면 즉시</td><td>작업 큐(한 메시지를 한 번만 처리)</td></tr></tbody></table>
-<p>대부분은 <strong>Limits</strong>를 씁니다. 이때 "한도"를 어떻게 잡느냐가 핵심입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="메시지는-언제-지워지나-limits-정책">메시지는 언제 지워지나 (Limits 정책)<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%A9%94%EC%8B%9C%EC%A7%80%EB%8A%94-%EC%96%B8%EC%A0%9C-%EC%A7%80%EC%9B%8C%EC%A7%80%EB%82%98-limits-%EC%A0%95%EC%B1%85" class="hash-link" aria-label="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" title="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" translate="no">​</a></h2>
-<p>Limits 정책에서는 다음 세 한도 중 하나라도 넘으면 오래된 메시지부터 지워집니다.</p>
-<ul>
-<li class=""><code>max_msgs</code>: 최대 메시지 <strong>개수</strong></li>
-<li class=""><code>max_bytes</code>: 최대 <strong>용량</strong></li>
-<li class=""><code>max_age</code>: 최대 <strong>보관 기간</strong>(메시지의 수명)</li>
-</ul>
-<p>여기서 가장 사고가 잦은 것이 <span style="background-color:#fff5b1"><code>max_age</code></span>입니다. 소비자가 가져가는 주기보다 짧게 잡으면, 가져가기도 전에 메시지가 만료되어 사라집니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention-2.webp" alt="max_age가 소비 주기보다 짧으면 소비 전에 삭제되고, 길면 소비 후 만료되어 안전하다"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="스트림-설정-방법">스트림 설정 방법<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%8A%A4%ED%8A%B8%EB%A6%BC-%EC%84%A4%EC%A0%95-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="스트림 설정 방법에 대한 직접 링크" title="스트림 설정 방법에 대한 직접 링크" translate="no">​</a></h2>
-<p>스트림을 만들 때 <code>StreamConfig</code>에 정책과 한도를 지정합니다.</p>
-<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">from</span><span class="token plain"> nats</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">api </span><span class="token keyword" style="font-style:italic">import</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> RetentionPolicy</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">config </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    name</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token string" style="color:rgb(195, 232, 141)">"MY_STREAM"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    subjects</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token string" style="color:rgb(195, 232, 141)">"my-service.&gt;"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    retention</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain">RetentionPolicy</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">LIMITS</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">   </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 기본</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    max_age</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token number" style="color:rgb(247, 140, 108)">14</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">24</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">          </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 14일 (초 단위), 소비 주기보다 길게</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># max_msgs, max_bytes 도 함께 둘 수 있음</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">add_stream</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">config</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><br></div></code></pre></div></div>
-<p><code>max_age</code>는 <strong>소비자가 메시지를 가져가는 주기보다 넉넉히</strong> 잡습니다. 하루 한 번 모아 가는 소비자가 있다면, 하루로 잡지 말고 며칠 이상 두는 식입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정">흔한 함정<a href="https://kgenots.com/blog/nats-jetstream-retention#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="흔한 함정에 대한 직접 링크" title="흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong><code>max_age</code>를 소비 주기보다 짧게</strong>: <span style="background-color:#ffdce0">소비 전에 메시지가 삭제됩니다.</span> 발행도 삭제도 정상 동작이라 <strong>오류 로그가 남지 않아</strong> 찾기 어렵습니다. (이 사고를 직접 겪은 이야기는 <a class="" href="https://kgenots.com/blog/event-bus-nats-temporal">회고 글</a>에 적었습니다.)</li>
-<li class=""><strong>CLI로 임시 변경</strong>: <code>nats stream edit</code>로 바꿔도, 서비스가 코드의 <code>StreamConfig</code>로 스트림을 다시 갱신하면 코드값으로 되돌아갑니다. <b>영구 변경은 코드에서</b> 합니다.</li>
-<li class=""><strong>스트림마다 제각각 보관 기간</strong>: 팀에서 1d/7d/30d를 임의로 섞으면 실수가 납니다. 공통 상수 하나로 고정하는 편이 안전합니다.</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/nats-jetstream-retention#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>max_age와 소비자(consumer)의 ack는 무슨 관계인가요?</strong>
-<ul>
-<li class="">Limits 정책에서는 무관합니다. 소비자가 ack하지 않아도 <code>max_age</code>가 지나면 지워집니다. ack 기반으로 지우려면 Interest나 WorkQueue 정책을 씁니다.</li>
-</ul>
-</li>
-<li class=""><strong>메시지를 잃지 않으려면 어떻게 하나요?</strong>
-<ul>
-<li class="">소비 주기보다 <code>max_age</code>를 길게 두고, 처리 실패분은 별도 DLQ(데드레터) 스트림으로 보냅니다. DLQ는 보통 보관 한도를 두지 않습니다.</li>
-</ul>
-</li>
-<li class=""><strong>한도를 여러 개 동시에 걸 수 있나요?</strong>
-<ul>
-<li class="">네. <code>max_msgs</code>, <code>max_bytes</code>, <code>max_age</code>를 함께 두면 <strong>가장 먼저 도달한 한도</strong>가 적용됩니다.</li>
-</ul>
-</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">NATS Docs: JetStream Streams / Retention Policies</li>
-<li class="">NATS Docs: <code>nats stream add</code> / <code>StreamConfig</code></li>
-</ul>]]></content:encoded>
-            <category>Reference</category>
-            <category>Backend</category>
-            <category>NATS</category>
-        </item>
-        <item>
-            <title><![CDATA[모노레포 워크스페이스 도구 이해하기 (공유 패키지와 증분 빌드)]]></title>
-            <link>https://kgenots.com/blog/monorepo-workspace-tooling</link>
-            <guid>https://kgenots.com/blog/monorepo-workspace-tooling</guid>
-            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[모노레포에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.]]></description>
-            <content:encoded><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#monorepo">모노레포</a>에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.</p>
-<p>결론부터 말하면, 모노레포 도구는 <span style="background-color:#fff5b1">두 층위로 나뉩니다.</span> 패키지 매니저의 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 바뀐 부분만 다시 빌드(증분 빌드)와 캐시를 담당합니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="워크스페이스-도구란">워크스페이스 도구란<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%9B%8C%ED%81%AC%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4-%EB%8F%84%EA%B5%AC%EB%9E%80" class="hash-link" aria-label="워크스페이스 도구란에 대한 직접 링크" title="워크스페이스 도구란에 대한 직접 링크" translate="no">​</a></h2>
-<p>워크스페이스 도구는 한 레포 안의 여러 패키지를 함께 관리하게 해 주는 도구입니다. 공통 코드를 여러 앱이 나눠 쓰게 연결하고, 무엇을 다시 빌드할지 정리해 줍니다.</p>
-<p>요리에 비유하면, 여러 메뉴(앱)가 <b>공용 재료 창고(공유 패키지)</b>를 함께 쓰고, 재료가 바뀌면 <b>그 재료를 쓰는 메뉴만 다시 조리</b>하는 것과 같습니다. 창고 연결과 "다시 조리할 메뉴 고르기"는 서로 다른 일입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="두-층위로-나눠-보기">두 층위로 나눠 보기<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%91%90-%EC%B8%B5%EC%9C%84%EB%A1%9C-%EB%82%98%EB%88%A0-%EB%B3%B4%EA%B8%B0" class="hash-link" aria-label="두 층위로 나눠 보기에 대한 직접 링크" title="두 층위로 나눠 보기에 대한 직접 링크" translate="no">​</a></h2>
-<p>도구를 두 층위로 나눠 보면 역할이 분명해집니다.</p>
-<table><thead><tr><th>층위</th><th>역할</th><th>대표 도구</th></tr></thead><tbody><tr><td><strong>패키지 매니저 워크스페이스</strong></td><td>공유 패키지를 연결(의존성)</td><td>pnpm/yarn workspaces, uv, Cargo, Go workspace</td></tr><tr><td><strong>빌드 오케스트레이터</strong></td><td>task 그래프 + 증분 빌드·캐시</td><td>Turborepo, Nx</td></tr></tbody></table>
-<p>둘은 함께 씁니다. 패키지 매니저가 "무엇을 공유하는지"를 알고, 오케스트레이터가 "무엇을 다시 만들지"를 정합니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-2.webp" alt="패키지 매니저 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 증분 빌드와 캐시를 담당하는 두 층위 구분"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="공유-패키지-연결-패키지-매니저">공유 패키지 연결 (패키지 매니저)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EA%B3%B5%EC%9C%A0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EC%97%B0%EA%B2%B0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EB%A7%A4%EB%8B%88%EC%A0%80" class="hash-link" aria-label="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" title="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" translate="no">​</a></h2>
-<p>첫 층위는 공유 패키지를 연결하는 일입니다. 워크스페이스를 선언하면, 한 패키지를 고쳤을 때 그것을 쓰는 앱이 <b>즉시 같은 코드를 봅니다.</b> 버전을 올려 배포하고 다시 받아오는 왕복이 사라집니다.</p>
-<div class="language-yaml codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-yaml codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># pnpm-workspace.yaml</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token key atrule">packages</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"apps/*"</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"packages/*"</span><br></div></code></pre></div></div>
-<div class="language-json codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-json codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// apps/web/package.json (공유 패키지를 그대로 의존)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"dependencies"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"@acme/ui"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"workspace:*"</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><br></div></code></pre></div></div>
-<p>이 연결이 <a class="" href="https://kgenots.com/blog/monorepo-15-service-msa">모노레포의 가장 큰 이점</a>입니다. 공유 코드와 계약이 한 커밋에서 같이 움직입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="바뀐-것만-빌드-오케스트레이터">바뀐 것만 빌드 (오케스트레이터)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%B0%94%EB%80%90-%EA%B2%83%EB%A7%8C-%EB%B9%8C%EB%93%9C-%EC%98%A4%EC%BC%80%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%9D%B4%ED%84%B0" class="hash-link" aria-label="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" title="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" translate="no">​</a></h2>
-<p>둘째 층위는 바뀐 것만 다시 빌드하는 일입니다. 빌드 오케스트레이터는 패키지 사이의 의존 그래프를 알고 있어서, <span style="background-color:#fff5b1">바뀐 패키지와 그 영향을 받는 앱만 다시 빌드</span>하고 나머지는 캐시 결과를 씁니다.</p>
-<div class="language-bash codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-bash codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">turbo run build       # 바뀐 것 + 영향받는 것만 빌드, 나머지는 캐시</span><br></div></code></pre></div></div>
-<p>핵심은 <strong>캐시</strong>입니다. 입력(소스·의존·설정)이 그대로면 이전 빌드 결과를 그대로 가져옵니다. 전체를 매번 다시 빌드하지 않으니, 레포가 커져도 피드백이 느려지지 않습니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-3.webp" alt="변경된 공유 패키지와 그것을 의존하는 앱만 다시 빌드하고, 무관한 패키지·앱은 캐시 결과를 가져오는 증분 빌드"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정">흔한 함정<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="흔한 함정에 대한 직접 링크" title="흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>순환 의존</strong>: 패키지 A가 B를, B가 다시 A를 의존하면 그래프가 꼬여 증분 빌드가 어긋납니다. <b>의존 방향을 한쪽으로</b> 유지합니다.</li>
-<li class=""><strong>캐시 키를 잘못 잡음</strong>: 빌드에 영향을 주는 입력(환경 변수·설정 파일 등)을 캐시 키에서 빠뜨리면, <span style="background-color:#ffdce0">바뀌었는데도 옛 캐시를 가져옵니다.</span> 입력을 빠짐없이 키에 포함합니다.</li>
-<li class=""><strong>결국 전부 빌드</strong>: 의존을 너무 넓게 걸면 작은 변경에도 전부 다시 빌드됩니다. 공유 패키지를 잘게 나눠 영향 범위를 좁힙니다.</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/monorepo-workspace-tooling#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>패키지 매니저 워크스페이스만 있으면 안 되나요?</strong>
-<ul>
-<li class="">공유는 됩니다. 다만 "무엇을 다시 빌드할지"는 직접 관리해야 합니다. 레포가 커지면 증분 빌드·캐시를 주는 오케스트레이터의 이점이 커집니다.</li>
-</ul>
-</li>
-<li class=""><strong>Turborepo와 Nx 중 무엇을 고르나요?</strong>
-<ul>
-<li class="">핵심 기능(task 그래프·캐시)은 비슷합니다. 설정이 가볍고 단순하면 Turborepo, 플러그인과 코드 생성까지 폭넓게 쓰려면 Nx가 흔한 선택입니다.</li>
-</ul>
-</li>
-<li class=""><strong>JS가 아닌 언어도 되나요?</strong>
-<ul>
-<li class="">됩니다. uv(파이썬), Cargo(러스트), Go workspace가 같은 "워크스페이스" 개념을 제공합니다. 오케스트레이터도 언어 무관하게 task를 묶을 수 있습니다.</li>
-</ul>
-</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">Turborepo / Nx Docs: Task Graph / Caching</li>
-<li class="">pnpm / uv / Cargo / Go Workspaces</li>
-</ul>]]></content:encoded>
-            <category>Reference</category>
-            <category>Architecture</category>
-            <category>Ops</category>
         </item>
         <item>
             <title><![CDATA[OAuth 토큰, 어디에 저장할까 (쿠키 vs localStorage)]]></title>
@@ -511,6 +324,134 @@
             <category>Security</category>
         </item>
         <item>
+            <title><![CDATA[NATS JetStream 스트림 보관 정책 이해하기]]></title>
+            <link>https://kgenots.com/blog/nats-jetstream-retention</link>
+            <guid>https://kgenots.com/blog/nats-jetstream-retention</guid>
+            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[NATS JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.]]></description>
+            <content:encoded><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#nats">NATS</a> JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.</p>
+<p>결론부터 말하면, <span style="background-color:#fff5b1">스트림 보관 기간(<code>max_age</code>)은 소비자가 메시지를 가져가는 주기보다 넉넉히 길게</span> 잡아야 합니다. 짧으면 소비하기도 전에 메시지가 지워집니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="jetstream-스트림과-보관-정책이란">JetStream 스트림과 보관 정책이란<a href="https://kgenots.com/blog/nats-jetstream-retention#jetstream-%EC%8A%A4%ED%8A%B8%EB%A6%BC%EA%B3%BC-%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85%EC%9D%B4%EB%9E%80" class="hash-link" aria-label="JetStream 스트림과 보관 정책이란에 대한 직접 링크" title="JetStream 스트림과 보관 정책이란에 대한 직접 링크" translate="no">​</a></h2>
+<p>JetStream 스트림은 NATS가 메시지를 디스크에 저장해 두는 저장소입니다. 일반 NATS는 메시지를 흘려보내고 끝이지만, JetStream은 스트림에 쌓아 두고 소비자가 나중에 가져갈 수 있게 합니다.</p>
+<p>보관 정책(retention policy)은 <b>이 쌓인 메시지를 언제 지울지</b>를 정하는 규칙입니다. 모든 메시지를 영원히 둘 수는 없으므로, 스트림마다 지우는 기준이 필요합니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="보관-정책-세-가지">보관 정책 세 가지<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85-%EC%84%B8-%EA%B0%80%EC%A7%80" class="hash-link" aria-label="보관 정책 세 가지에 대한 직접 링크" title="보관 정책 세 가지에 대한 직접 링크" translate="no">​</a></h2>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention.webp" alt="NATS JetStream 보관 정책 세 가지와 메시지가 지워지는 조건"></figure>
+<p>NATS JetStream의 보관 정책은 세 가지입니다.</p>
+<table><thead><tr><th>정책</th><th>메시지를 지우는 시점</th><th>쓰는 곳</th></tr></thead><tbody><tr><td><strong>Limits</strong> (기본)</td><td>한도(개수·용량·기간)에 도달하면 오래된 것부터</td><td>여러 소비자가 같은 메시지를 각자 읽는 경우</td></tr><tr><td><strong>Interest</strong></td><td>관심 있는 모든 소비자가 ack하면</td><td>구독자 모두 처리한 뒤 비워도 될 때</td></tr><tr><td><strong>WorkQueue</strong></td><td>소비자 하나가 ack하면 즉시</td><td>작업 큐(한 메시지를 한 번만 처리)</td></tr></tbody></table>
+<p>대부분은 <strong>Limits</strong>를 씁니다. 이때 "한도"를 어떻게 잡느냐가 핵심입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="메시지는-언제-지워지나-limits-정책">메시지는 언제 지워지나 (Limits 정책)<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%A9%94%EC%8B%9C%EC%A7%80%EB%8A%94-%EC%96%B8%EC%A0%9C-%EC%A7%80%EC%9B%8C%EC%A7%80%EB%82%98-limits-%EC%A0%95%EC%B1%85" class="hash-link" aria-label="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" title="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" translate="no">​</a></h2>
+<p>Limits 정책에서는 다음 세 한도 중 하나라도 넘으면 오래된 메시지부터 지워집니다.</p>
+<ul>
+<li class=""><code>max_msgs</code>: 최대 메시지 <strong>개수</strong></li>
+<li class=""><code>max_bytes</code>: 최대 <strong>용량</strong></li>
+<li class=""><code>max_age</code>: 최대 <strong>보관 기간</strong>(메시지의 수명)</li>
+</ul>
+<p>여기서 가장 사고가 잦은 것이 <span style="background-color:#fff5b1"><code>max_age</code></span>입니다. 소비자가 가져가는 주기보다 짧게 잡으면, 가져가기도 전에 메시지가 만료되어 사라집니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention-2.webp" alt="max_age가 소비 주기보다 짧으면 소비 전에 삭제되고, 길면 소비 후 만료되어 안전하다"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="스트림-설정-방법">스트림 설정 방법<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%8A%A4%ED%8A%B8%EB%A6%BC-%EC%84%A4%EC%A0%95-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="스트림 설정 방법에 대한 직접 링크" title="스트림 설정 방법에 대한 직접 링크" translate="no">​</a></h2>
+<p>스트림을 만들 때 <code>StreamConfig</code>에 정책과 한도를 지정합니다.</p>
+<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">from</span><span class="token plain"> nats</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">api </span><span class="token keyword" style="font-style:italic">import</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> RetentionPolicy</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">config </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    name</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token string" style="color:rgb(195, 232, 141)">"MY_STREAM"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    subjects</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token string" style="color:rgb(195, 232, 141)">"my-service.&gt;"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    retention</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain">RetentionPolicy</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">LIMITS</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">   </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 기본</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    max_age</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token number" style="color:rgb(247, 140, 108)">14</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">24</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">          </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 14일 (초 단위), 소비 주기보다 길게</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># max_msgs, max_bytes 도 함께 둘 수 있음</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">add_stream</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">config</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><br></div></code></pre></div></div>
+<p><code>max_age</code>는 <strong>소비자가 메시지를 가져가는 주기보다 넉넉히</strong> 잡습니다. 하루 한 번 모아 가는 소비자가 있다면, 하루로 잡지 말고 며칠 이상 두는 식입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정">흔한 함정<a href="https://kgenots.com/blog/nats-jetstream-retention#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="흔한 함정에 대한 직접 링크" title="흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong><code>max_age</code>를 소비 주기보다 짧게</strong>: <span style="background-color:#ffdce0">소비 전에 메시지가 삭제됩니다.</span> 발행도 삭제도 정상 동작이라 <strong>오류 로그가 남지 않아</strong> 찾기 어렵습니다. (이 사고를 직접 겪은 이야기는 <a class="" href="https://kgenots.com/blog/event-bus-nats-temporal">회고 글</a>에 적었습니다.)</li>
+<li class=""><strong>CLI로 임시 변경</strong>: <code>nats stream edit</code>로 바꿔도, 서비스가 코드의 <code>StreamConfig</code>로 스트림을 다시 갱신하면 코드값으로 되돌아갑니다. <b>영구 변경은 코드에서</b> 합니다.</li>
+<li class=""><strong>스트림마다 제각각 보관 기간</strong>: 팀에서 1d/7d/30d를 임의로 섞으면 실수가 납니다. 공통 상수 하나로 고정하는 편이 안전합니다.</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/nats-jetstream-retention#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>max_age와 소비자(consumer)의 ack는 무슨 관계인가요?</strong>
+<ul>
+<li class="">Limits 정책에서는 무관합니다. 소비자가 ack하지 않아도 <code>max_age</code>가 지나면 지워집니다. ack 기반으로 지우려면 Interest나 WorkQueue 정책을 씁니다.</li>
+</ul>
+</li>
+<li class=""><strong>메시지를 잃지 않으려면 어떻게 하나요?</strong>
+<ul>
+<li class="">소비 주기보다 <code>max_age</code>를 길게 두고, 처리 실패분은 별도 DLQ(데드레터) 스트림으로 보냅니다. DLQ는 보통 보관 한도를 두지 않습니다.</li>
+</ul>
+</li>
+<li class=""><strong>한도를 여러 개 동시에 걸 수 있나요?</strong>
+<ul>
+<li class="">네. <code>max_msgs</code>, <code>max_bytes</code>, <code>max_age</code>를 함께 두면 <strong>가장 먼저 도달한 한도</strong>가 적용됩니다.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">NATS Docs: JetStream Streams / Retention Policies</li>
+<li class="">NATS Docs: <code>nats stream add</code> / <code>StreamConfig</code></li>
+</ul>]]></content:encoded>
+            <category>Reference</category>
+            <category>Backend</category>
+            <category>NATS</category>
+        </item>
+        <item>
+            <title><![CDATA[SPA를 한 번 빌드해 여러 환경에 띄우기 (런타임 설정)]]></title>
+            <link>https://kgenots.com/blog/spa-runtime-config</link>
+            <guid>https://kgenots.com/blog/spa-runtime-config</guid>
+            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[API 주소처럼 환경마다 다른 값을, 빌드에 박지 않고 앱이 켜질 때 읽게 만들어 한 번 빌드로 여러 환경에 배포하는 방법을 정리합니다.]]></description>
+            <content:encoded><![CDATA[<p>API 주소처럼 환경마다 다른 값을, 빌드에 박지 않고 앱이 켜질 때 읽게 만들어 한 번 빌드로 여러 환경에 배포하는 방법을 정리합니다.</p>
+<p>결론부터 말하면, <span style="background-color:#fff5b1">환경별 값은 빌드에 박지 말고, 앱이 켜질 때 읽는 런타임 설정 파일로 분리</span>합니다. 그러면 앱은 한 번만 빌드하고, 설정 파일만 환경에 맞게 갈아 끼우면 됩니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="빌드타임-주입과-런타임-주입-무엇이-다른가">빌드타임 주입과 런타임 주입, 무엇이 다른가<a href="https://kgenots.com/blog/spa-runtime-config#%EB%B9%8C%EB%93%9C%ED%83%80%EC%9E%84-%EC%A3%BC%EC%9E%85%EA%B3%BC-%EB%9F%B0%ED%83%80%EC%9E%84-%EC%A3%BC%EC%9E%85-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%A4%EB%A5%B8%EA%B0%80" class="hash-link" aria-label="빌드타임 주입과 런타임 주입, 무엇이 다른가에 대한 직접 링크" title="빌드타임 주입과 런타임 주입, 무엇이 다른가에 대한 직접 링크" translate="no">​</a></h2>
+<p>차이는 환경별 값을 <strong>언제 결정하느냐</strong>입니다. 빌드타임 주입은 빌드할 때 값을 코드에 박아 넣고, 런타임 주입은 앱이 브라우저에서 켜질 때 값을 읽습니다.</p>
+<table><thead><tr><th>구분</th><th>빌드타임 주입</th><th>런타임 주입</th></tr></thead><tbody><tr><td>값이 정해지는 시점</td><td>빌드할 때</td><td>앱이 켜질 때</td></tr><tr><td>환경이 N개면</td><td><span style="background-color:#ffdce0">N번 빌드</span></td><td>한 번 빌드 + 설정 N개</td></tr><tr><td>대표 예</td><td><code>import.meta.env.VITE_*</code></td><td><code>window.__ENV__</code></td></tr></tbody></table>
+<p>빌드타임 주입(<code>VITE_*</code>, <code>REACT_APP_*</code> 등)은 편하지만, 값이 결과물에 박혀 버립니다. <b>환경이 늘면 그만큼 다시 빌드</b>해야 합니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="왜-런타임-설정인가">왜 런타임 설정인가<a href="https://kgenots.com/blog/spa-runtime-config#%EC%99%9C-%EB%9F%B0%ED%83%80%EC%9E%84-%EC%84%A4%EC%A0%95%EC%9D%B8%EA%B0%80" class="hash-link" aria-label="왜 런타임 설정인가에 대한 직접 링크" title="왜 런타임 설정인가에 대��한 직접 링크" translate="no">​</a></h2>
+<p>런타임 설정이 필요한 이유는, 같은 앱을 환경마다 다른 값으로 띄워야 할 때 매번 다시 빌드할 수 없기 때문입니다. 특히 고객사마다 API 주소가 다른 온프레미스 배포에서는 빌드타임 주입이 곧 무너집니다.</p>
+<p>한 번 인쇄한 안내 책자에 비유할 수 있습니다. 본문(앱)은 한 번만 찍고, <b>마지막 주소 페이지(설정)만 환경마다 끼워 넣는</b> 것입니다. 책자를 통째로 다시 찍지 않아도 됩니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="구현-방법">구현 방법<a href="https://kgenots.com/blog/spa-runtime-config#%EA%B5%AC%ED%98%84-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="구현 방법에 대한 직접 링크" title="구현 방법에 대한 직접 링크" translate="no">​</a></h2>
+<p>핵심은 빌드 결과물 바깥에 설정 파일을 따로 두고, 앱이 시작할 때 그 파일을 읽게 하는 것입니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/spa-runtime-config-2.webp" alt="빌드타임 주입은 환경마다 다시 빌드하고, 런타임 주입은 한 번 빌드한 뒤 환경별 설정 파일만 갈아 끼우는 비교"></figure>
+<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="1-설정-파일을-따로-둔다">1. 설정 파일을 따로 둔다<a href="https://kgenots.com/blog/spa-runtime-config#1-%EC%84%A4%EC%A0%95-%ED%8C%8C%EC%9D%BC%EC%9D%84-%EB%94%B0%EB%A1%9C-%EB%91%94%EB%8B%A4" class="hash-link" aria-label="1. 설정 파일을 따로 둔다에 대한 직접 링크" title="1. 설정 파일을 따로 둔다에 대한 직접 링크" translate="no">​</a></h3>
+<p>빌드에 포함하지 않는 <code>env-config.js</code>를 만들어 전역 객체에 값을 싣습니다.</p>
+<div class="language-js codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-js codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// env-config.js  (빌드 산출물이 아니라 배포 시 갈아 끼우는 파일)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token dom variable" style="color:rgb(191, 199, 213)">window</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token property-access">__ENV__</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token constant" style="color:rgb(130, 170, 255)">API_BASE_URL</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"https://api.example.com"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">;</span><br></div></code></pre></div></div>
+<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="2-indexhtml에서-먼저-읽는다">2. index.html에서 먼저 읽는다<a href="https://kgenots.com/blog/spa-runtime-config#2-indexhtml%EC%97%90%EC%84%9C-%EB%A8%BC%EC%A0%80-%EC%9D%BD%EB%8A%94%EB%8B%A4" class="hash-link" aria-label="2. index.html에서 먼저 읽는다에 대한 직접 링크" title="2. index.html에서 먼저 읽는다에 대한 직접 링크" translate="no">​</a></h3>
+<p>앱 번들보다 먼저 설정 파일을 로드합니다.</p>
+<div class="language-html codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-html codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag" style="color:rgb(255, 85, 114)"> </span><span class="token tag attr-name" style="color:rgb(255, 203, 107)">src</span><span class="token tag attr-value punctuation attr-equals" style="color:rgb(199, 146, 234)">=</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag attr-value" style="color:rgb(255, 85, 114)">/env-config.js</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><span class="token script"></span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;/</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag" style="color:rgb(255, 85, 114)"> </span><span class="token tag attr-name" style="color:rgb(255, 203, 107)">type</span><span class="token tag attr-value punctuation attr-equals" style="color:rgb(199, 146, 234)">=</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag attr-value" style="color:rgb(255, 85, 114)">module</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag" style="color:rgb(255, 85, 114)"> </span><span class="token tag attr-name" style="color:rgb(255, 203, 107)">src</span><span class="token tag attr-value punctuation attr-equals" style="color:rgb(199, 146, 234)">=</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag attr-value" style="color:rgb(255, 85, 114)">/assets/index.js</span><span class="token tag attr-value punctuation" style="color:rgb(199, 146, 234)">"</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><span class="token script"></span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&lt;/</span><span class="token tag" style="color:rgb(255, 85, 114)">script</span><span class="token tag punctuation" style="color:rgb(199, 146, 234)">&gt;</span><br></div></code></pre></div></div>
+<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="3-코드에서-사용한다">3. 코드에서 사용한다<a href="https://kgenots.com/blog/spa-runtime-config#3-%EC%BD%94%EB%93%9C%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%9C%EB%8B%A4" class="hash-link" aria-label="3. 코드에서 사용한다에 대한 직접 링크" title="3. 코드에서 사용한다에 대한 직접 링크" translate="no">​</a></h3>
+<div class="language-ts codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-ts codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">const</span><span class="token plain"> </span><span class="token constant" style="color:rgb(130, 170, 255)">API_BASE_URL</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  window</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">__ENV__</span><span class="token operator" style="color:rgb(137, 221, 255)">?.</span><span class="token constant" style="color:rgb(130, 170, 255)">API_BASE_URL</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">??</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"http://localhost:8080"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">;</span><span class="token plain"> </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// 로컬 기본값</span><br></div></code></pre></div></div>
+<h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="4-환경마다-설정-파일만-교체">4. 환경마다 설정 파일만 교체<a href="https://kgenots.com/blog/spa-runtime-config#4-%ED%99%98%EA%B2%BD%EB%A7%88%EB%8B%A4-%EC%84%A4%EC%A0%95-%ED%8C%8C%EC%9D%BC%EB%A7%8C-%EA%B5%90%EC%B2%B4" class="hash-link" aria-label="4. 환경마다 설정 파일만 교체에 대한 직접 링크" title="4. 환경마다 설정 파일만 교체에 대한 직접 링크" translate="no">​</a></h3>
+<p>배포 환경에서 <code>env-config.js</code>만 그 환경 값으로 바꿉니다. 쿠버네티스라면 ConfigMap을 볼륨으로 마운트해 이 파일을 덮어쓰는 식입니다. <b>앱 번들은 그대로</b>입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정-cdn-캐시">흔한 함정 (CDN 캐시)<a href="https://kgenots.com/blog/spa-runtime-config#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95-cdn-%EC%BA%90%EC%8B%9C" class="hash-link" aria-label="흔한 함정 (CDN 캐시)에 대한 직접 링크" title="흔한 함정 (CDN 캐시)에 대한 직접 링크" translate="no">​</a></h2>
+<p>가장 자주 데이는 함정은 CDN 캐시입니다. 화면 파일은 빠른 응답을 위해 CDN에 캐시되는데, <span style="background-color:#ffdce0">설정 파일까지 캐시되면 값을 바꿔도 옛 설정이 계속 내려갑니다.</span></p>
+<p>해결은 설정 파일만 캐시를 끄는 것입니다.</p>
+<div class="language-text codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-text codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">Cache-Control: no-store      # env-config.js 에만 적용</span><br></div></code></pre></div></div>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/spa-runtime-config-3.webp" alt="CDN이 설정 파일까지 캐시해 옛 값이 내려가는 문제와, 설정 파일에만 no-store를 적용한 해결"></figure>
+<p>그 외 주의점:</p>
+<ul>
+<li class=""><strong>빌드타임과 런타임을 섞지 않기</strong>: <code>import.meta.env</code>와 <code>window.__ENV__</code>를 한 값에 섞으면 어느 쪽이 적용됐는지 헷갈립니다. 환경별 값은 런타임으로 일원화합니다.</li>
+<li class=""><strong>로컬 기본값 두기</strong>: 설정 파일이 없을 때를 대비해 코드에 안전한 기본값(<code>?? localhost</code>)을 둡니다.</li>
+<li class=""><strong>민감 정보 금지</strong>: <code>env-config.js</code>는 브라우저가 그대로 읽습니다. 비밀 키 같은 민감 값은 절대 넣지 않습니다.</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/spa-runtime-config#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>Next.js 같은 SSR도 같은 방법인가요?</strong>
+<ul>
+<li class="">SSR은 서버에서 환경 변수를 직접 읽을 수 있어 사정이 다릅니다. 이 방법은 정적으로 빌드되는 SPA(CSR)에서 특히 유용합니다.</li>
+</ul>
+</li>
+<li class=""><strong><code>.env</code> 파일을 여러 개 두면 안 되나요?</strong>
+<ul>
+<li class=""><code>.env.production</code> 등은 결국 빌드타임에 박힙니다. 환경이 빌드 후에 정해지는 경우(온프레미스 등)에는 런타임 설정이 필요합니다.</li>
+</ul>
+</li>
+<li class=""><strong>설정 값이 많아지면요?</strong>
+<ul>
+<li class=""><code>window.__ENV__</code> 객체에 모읍니다. 타입 안전을 위해 한 곳에서 읽어 검증한 뒤 앱 전역에 제공하는 래퍼를 두면 좋습니다.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/spa-runtime-config#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">MDN: <code>Cache-Control</code></li>
+<li class="">12-Factor App: Config</li>
+</ul>]]></content:encoded>
+            <category>Reference</category>
+            <category>Frontend</category>
+            <category>Ops</category>
+        </item>
+        <item>
             <title><![CDATA[Temporal로 보상(Saga) 트랜잭션 다루기]]></title>
             <link>https://kgenots.com/blog/temporal-saga-compensation</link>
             <guid>https://kgenots.com/blog/temporal-saga-compensation</guid>
@@ -565,6 +506,65 @@
             <category>Reference</category>
             <category>Backend</category>
             <category>Temporal</category>
+        </item>
+        <item>
+            <title><![CDATA[OPA로 API 권한(인가)을 외부화하기]]></title>
+            <link>https://kgenots.com/blog/opa-policy-authz</link>
+            <guid>https://kgenots.com/blog/opa-policy-authz</guid>
+            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[권한 판단 로직을 각 서비스 코드에 흩지 않고, 정책 엔진(OPA)으로 빼서 한곳에서 결정하게 만드는 방법을 정리합니다.]]></description>
+            <content:encoded><![CDATA[<p>권한 판단 로직을 각 서비스 코드에 흩지 않고, 정책 엔진(<a class="glossary-term-link" href="https://kgenots.com/glossary#opa">OPA</a>)으로 빼서 한곳에서 결정하게 만드는 방법을 정리합니다.</p>
+<p>결론부터 말하면, <span style="background-color:#fff5b1">"이 사용자가 이 동작을 해도 되나"라는 판단을 코드 곳곳에 흩지 말고, 정책 엔진(OPA) 한곳으로 빼냅니다.</span> 서비스는 묻기만 하고, 허용 여부는 정책이 답합니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="인증과-인가는-다르다">인증과 인가는 다르다<a href="https://kgenots.com/blog/opa-policy-authz#%EC%9D%B8%EC%A6%9D%EA%B3%BC-%EC%9D%B8%EA%B0%80%EB%8A%94-%EB%8B%A4%EB%A5%B4%EB%8B%A4" class="hash-link" aria-label="인증과 인가는 다르다에 대한 직접 링크" title="인증과 인가는 다르다에 대한 직접 링크" translate="no">​</a></h2>
+<p>먼저 용어를 구분합니다. 인증(authentication)은 "당신이 누구인지" 확인하는 것이고, 인가(authorization)는 "그 사람이 이 동작을 해도 되는지" 결정하는 것입니다. 이 글은 인가를 다룹니다.</p>
+<p>토큰으로 로그인 사용자를 확인했더라도(인증), 그 사람이 특정 자원을 수정해도 되는지(인가)는 별개의 판단입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="권한-결정을-왜-밖으로-빼나">권한 결정을 왜 밖으로 빼나<a href="https://kgenots.com/blog/opa-policy-authz#%EA%B6%8C%ED%95%9C-%EA%B2%B0%EC%A0%95%EC%9D%84-%EC%99%9C-%EB%B0%96%EC%9C%BC%EB%A1%9C-%EB%B9%BC%EB%82%98" class="hash-link" aria-label="권한 결정을 왜 밖으로 빼나에 대한 직접 링크" title="권한 결정을 왜 밖으로 빼나에 대한 직접 링크" translate="no">​</a></h2>
+<p>권한 판단을 코드에 직접 넣으면, <span style="background-color:#ffdce0">같은 규칙이 서비스마다 조금씩 다르게 흩어집니다.</span> 규칙이 바뀌면 여러 곳을 동시에 고쳐야 하고, 어디가 어떤 규칙을 쓰는지 한눈에 보이지 않습니다.</p>
+<p>건물 출입에 비유할 수 있습니다. 문마다 경비원이 각자 규칙을 외워 판단하면, 규칙이 바뀔 때 모든 경비원을 다시 교육해야 합니다. 대신 <b>중앙 통제실 한 곳에 무전으로 물어보면</b>, 규칙은 통제실만 바꾸면 됩니다. OPA가 그 통제실 역할입니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/opa-policy-authz-2.webp" alt="권한 규칙이 서비스마다 흩어진 경우와, OPA 한곳으로 외부화해 각 서비스가 묻기만 하는 구조 비교"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="pep와-pdp-역할-나누기">PEP와 PDP, 역할 나누기<a href="https://kgenots.com/blog/opa-policy-authz#pep%EC%99%80-pdp-%EC%97%AD%ED%95%A0-%EB%82%98%EB%88%84%EA%B8%B0" class="hash-link" aria-label="PEP와 PDP, 역할 나누기에 대한 직접 링크" title="PEP와 PDP, 역할 나누기에 대한 직접 링크" translate="no">​</a></h2>
+<p>권한 외부화는 역할을 둘로 나눕니다.</p>
+<table><thead><tr><th>역할</th><th>하는 일</th><th>위치</th></tr></thead><tbody><tr><td><strong>PEP</strong> (정책 시행 지점)</td><td>요청을 가로채 "물어보고" 결과를 시행</td><td>각 서비스(또는 게이트웨이)</td></tr><tr><td><strong>PDP</strong> (정책 결정 지점)</td><td>정책을 평가해 allow/deny를 "답함"</td><td>OPA</td></tr></tbody></table>
+<p>서비스(PEP)는 판단하지 않습니다. 요청 정보를 모아 OPA(PDP)에 묻고, 돌아온 답대로 통과시키거나 막습니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="정책-작성과-평가-방법">정책 작성과 평가 (방법)<a href="https://kgenots.com/blog/opa-policy-authz#%EC%A0%95%EC%B1%85-%EC%9E%91%EC%84%B1%EA%B3%BC-%ED%8F%89%EA%B0%80-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="정책 작성과 평가 (방법)에 대한 직접 링크" title="정책 작성과 평가 (방법)에 대한 직접 링크" translate="no">​</a></h2>
+<p>OPA의 정책은 Rego라는 언어로 작성합니다. "어떤 입력이면 허용인지"를 선언합니다.</p>
+<div class="language-rego codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-rego codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">package authz</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">default allow := false          # 기본은 거부 (fail-close)</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">allow if {</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    input.action == "GetUser"</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    input.subject.role == "admin"</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">}</span><br></div></code></pre></div></div>
+<p>PEP는 요청에서 <b>주체·동작·자원</b>을 모아 OPA에 평가를 요청합니다.</p>
+<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># PEP: 요청 정보를 모아 OPA 에 질의</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">decision </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> http_post</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token string" style="color:rgb(195, 232, 141)">"http://opa:8181/v1/data/authz/allow"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    json</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token string" style="color:rgb(195, 232, 141)">"input"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token string" style="color:rgb(195, 232, 141)">"subject"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token string" style="color:rgb(195, 232, 141)">"id"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> user_id</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"role"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> role</span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token string" style="color:rgb(195, 232, 141)">"action"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> operation_id</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">     </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 예: "GetUser"</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token string" style="color:rgb(195, 232, 141)">"resource"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token string" style="color:rgb(195, 232, 141)">"type"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"user"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"id"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> target_id</span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">if</span><span class="token plain"> </span><span class="token keyword" style="font-style:italic">not</span><span class="token plain"> decision</span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token string" style="color:rgb(195, 232, 141)">"result"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token keyword" style="font-style:italic">raise</span><span class="token plain"> Forbidden</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain">              </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># deny 면 차단</span><br></div></code></pre></div></div>
+<p>정책 파일은 번들로 묶어 OPA에 배포합니다. 규칙이 바뀌면 <b>코드 배포 없이 정책 번들만</b> 갱신하면 됩니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/opa-policy-authz-3.webp" alt="PEP가 주체·동작·자원을 모아 OPA에 질의하고, 정책 평가 결과가 allow면 통과 deny면 차단되는 흐름"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정">흔한 함정<a href="https://kgenots.com/blog/opa-policy-authz#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="흔한 함정에 대한 직접 링크" title="흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>정책과 코드의 동기화</strong>: 새 엔드포인트(동작)를 추가했는데 정책에 그 동작을 빠뜨리면, 기본 거부(fail-close)에 걸려 막힙니다. <b>엔드포인트 추가 시 정책에도 동작을 등록</b>하는 절차를 둡니다.</li>
+<li class=""><strong>정책 번들 배포 누락</strong>: 정책을 고쳤는데 OPA에 새 번들이 안 올라가면, OPA는 옛 규칙으로 계속 판단합니다. 배포 후 <b>실제 적용됐는지 확인</b>합니다.</li>
+<li class=""><strong>fail-open vs fail-close</strong>: OPA가 응답하지 않을 때 통과시킬지(open) 막을지(close)를 정해야 합니다. <span style="background-color:#ffdce0">보안이 중요하면 기본은 거부(close)</span>입니다.</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/opa-policy-authz#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>권한 체크를 게이트웨이에 두나요, 서비스에 두나요?</strong>
+<ul>
+<li class="">둘 다 가능합니다. 게이트웨이에 PEP를 두면 공통 처리가 쉽고, 서비스에 두면 자원 단위의 세밀한 판단이 쉽습니다. 자원 소유권 같은 세밀한 규칙은 서비스 쪽 PEP가 유리합니다.</li>
+</ul>
+</li>
+<li class=""><strong>OPA 호출이 매 요청마다면 느리지 않나요?</strong>
+<ul>
+<li class="">OPA를 같은 노드(사이드카)에 두면 호출 비용이 작습니다. 그래도 부담되면 결정 결과를 짧게 캐시합니다.</li>
+</ul>
+</li>
+<li class=""><strong>꼭 OPA여야 하나요?</strong>
+<ul>
+<li class="">아니요. 핵심은 "권한 결정을 코드 밖으로 빼서 한곳에서 관리"하는 것입니다. OPA는 그 표준적인 구현일 뿐입니다.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/opa-policy-authz#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">Open Policy Agent (OPA) Docs: Rego / Bundles</li>
+<li class="">NIST: PEP / PDP (정책 시행·결정 지점)</li>
+</ul>]]></content:encoded>
+            <category>Reference</category>
+            <category>Backend</category>
+            <category>Security</category>
         </item>
         <item>
             <title><![CDATA[TSID vs UUID, 정렬 가능한 ID 만들기]]></title>
