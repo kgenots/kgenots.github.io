@@ -1,0 +1,517 @@
+[
+  {
+    "title": "인터넷 없는 환경에 컨테이너 배포하기 (에어갭)",
+    "slug": "airgap-container-install",
+    "image": "/assets/blog/cover-airgap-container-install.webp",
+    "summary": "인터넷이 막힌 에어갭(air-gap) 환경에 컨테이너 이미지를 반입하고 설치하는 방법과, \"받아올 수 있다\"는 가정 때문에 데이는 지점을 정리합니다.",
+    "link": "/blog/airgap-container-install",
+    "tags": [
+      "Reference",
+      "Ops",
+      "Kubernetes"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 527
+  },
+  {
+    "title": "S3 Parquet를 DuckDB로 조회하기",
+    "slug": "duckdb-parquet-on-s3",
+    "image": "/assets/blog/cover-duckdb-parquet-on-s3.webp",
+    "summary": "분석용 데이터를 별도 DB로 옮기지 않고, S3에 Parquet로 쌓아 DuckDB로 직접 SQL 조회하는 방법을 정리합니다.",
+    "link": "/blog/duckdb-parquet-on-s3",
+    "tags": [
+      "Reference",
+      "DB",
+      "Ops"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 491
+  },
+  {
+    "title": "gRPC 헬스체크, HTTP만으론 부족한 이유",
+    "slug": "grpc-health-check",
+    "image": "/assets/blog/cover-grpc-health-check.webp",
+    "summary": "HTTP `/health`가 200을 반환해도, 같은 프로세스 안의 gRPC 서버는 죽어 있을 수 있습니다. 표준 gRPC 헬스체크를 함께 등록해야 하는 이유와 붙이는 방법을 정리합니다.",
+    "link": "/blog/grpc-health-check",
+    "tags": [
+      "Reference",
+      "Backend",
+      "gRPC"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 555
+  },
+  {
+    "title": "모노레포 워크스페이스 도구 이해하기 (공유 패키지와 증분 빌드)",
+    "slug": "monorepo-workspace-tooling",
+    "image": "/assets/blog/cover-monorepo-workspace-tooling.webp",
+    "summary": "모노레포에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.",
+    "link": "/blog/monorepo-workspace-tooling",
+    "tags": [
+      "Reference",
+      "Architecture",
+      "Ops"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 514
+  },
+  {
+    "title": "NATS JetStream 스트림 보관 정책 이해하기",
+    "slug": "nats-jetstream-retention",
+    "image": "/assets/blog/cover-nats-jetstream-retention.webp",
+    "summary": "NATS JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.",
+    "link": "/blog/nats-jetstream-retention",
+    "tags": [
+      "Reference",
+      "Backend",
+      "NATS"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 493
+  },
+  {
+    "title": "OAuth 토큰, 어디에 저장할까 (쿠키 vs localStorage)",
+    "slug": "oauth-bff-token-storage",
+    "image": "/assets/blog/cover-oauth-bff-token-storage.webp",
+    "summary": "로그인 후 받은 토큰을 브라우저 어디에 저장해야 하는지, 선택지별 장단점과 고르는 기준을 정리합니다.",
+    "link": "/blog/oauth-bff-token-storage",
+    "tags": [
+      "Reference",
+      "Auth",
+      "Frontend",
+      "Security"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 4,
+    "wordCount": 769
+  },
+  {
+    "title": "OPA로 API 권한(인가)을 외부화하기",
+    "slug": "opa-policy-authz",
+    "image": "/assets/blog/cover-opa-policy-authz.webp",
+    "summary": "권한 판단 로직을 각 서비스 코드에 흩지 않고, 정책 엔진(OPA)으로 빼서 한곳에서 결정하게 만드는 방법을 정리합니다.",
+    "link": "/blog/opa-policy-authz",
+    "tags": [
+      "Reference",
+      "Backend",
+      "Security"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 524
+  },
+  {
+    "title": "SPA를 한 번 빌드해 여러 환경에 띄우기 (런타임 설정)",
+    "slug": "spa-runtime-config",
+    "image": "/assets/blog/cover-spa-runtime-config.webp",
+    "summary": "API 주소처럼 환경마다 다른 값을, 빌드에 박지 않고 앱이 켜질 때 읽게 만들어 한 번 빌드로 여러 환경에 배포하는 방법을 정리합니다.",
+    "link": "/blog/spa-runtime-config",
+    "tags": [
+      "Reference",
+      "Frontend",
+      "Ops"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 540
+  },
+  {
+    "title": "Temporal로 보상(Saga) 트랜잭션 다루기",
+    "slug": "temporal-saga-compensation",
+    "image": "/assets/blog/cover-temporal-saga-compensation.webp",
+    "summary": "여러 서비스에 걸친 작업을 하나의 트랜잭션으로 묶을 수 없을 때, 보상(Saga) 패턴과 Temporal 워크플로우로 안전하게 되돌리는 방법을 정리합니다.",
+    "link": "/blog/temporal-saga-compensation",
+    "tags": [
+      "Reference",
+      "Backend",
+      "Temporal"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 501
+  },
+  {
+    "title": "TSID vs UUID, 정렬 가능한 ID 만들기",
+    "slug": "tsid-vs-uuid",
+    "image": "/assets/blog/cover-tsid-vs-uuid.webp",
+    "summary": "기본키로 흔히 쓰는 UUID가 왜 DB 인덱스에 불리한지, 그리고 시간순으로 정렬되는 TSID로 무엇이 달라지는지 정리합니다.",
+    "link": "/blog/tsid-vs-uuid",
+    "tags": [
+      "Reference",
+      "Backend",
+      "DB"
+    ],
+    "date": "2026-06-19",
+    "readingTime": 3,
+    "wordCount": 524
+  },
+  {
+    "title": "6개월을 돌아보며, 다시 시작한다면",
+    "slug": "six-months-in-retrospect",
+    "image": "/assets/blog/cover-six-months-in-retrospect.webp",
+    "summary": "6개월간 백엔드·프론트엔드·인프라를 만들고 굴려 온 시리즈를 마무리합니다. 반복해서 배운 것과, 다시 시작한다면 다르게 할 것들을 정리합니다.",
+    "link": "/blog/six-months-in-retrospect",
+    "tags": [
+      "Essay",
+      "Retrospective",
+      "Architecture",
+      "BuildLog"
+    ],
+    "date": "2026-06-18",
+    "readingTime": 3,
+    "wordCount": 469
+  },
+  {
+    "title": "만드는 단계에서 운영하는 단계로",
+    "slug": "from-building-to-operating",
+    "image": "/assets/blog/cover-from-building-to-operating.webp",
+    "summary": "기능을 만들던 단계에서 만든 것을 운영하는 단계로 넘어가며 바뀐 것들을 정리합니다. 버전, 배포 자동화, 그리고 무엇이 도는지 들여다보는 일에 대한 이야기입니다.",
+    "link": "/blog/from-building-to-operating",
+    "tags": [
+      "Tech",
+      "Architecture",
+      "Ops",
+      "Retrospective",
+      "BuildLog"
+    ],
+    "date": "2026-06-17",
+    "readingTime": 3,
+    "wordCount": 562
+  },
+  {
+    "title": "하나의 코드베이스로 여러 웹 앱 만들기",
+    "slug": "one-codebase-many-web-apps",
+    "image": "/assets/blog/cover-one-codebase-many-web-apps.webp",
+    "summary": "여러 개의 웹 앱을 하나의 코드베이스에서 만들고 배포한 방법을 정리합니다. 특히 한 번 빌드한 앱을 고객사마다 다른 주소로 띄운 방법을 다룹니다.",
+    "link": "/blog/one-codebase-many-web-apps",
+    "tags": [
+      "Tech",
+      "Frontend",
+      "Architecture",
+      "Retrospective",
+      "BuildLog"
+    ],
+    "date": "2026-06-16",
+    "readingTime": 3,
+    "wordCount": 542
+  },
+  {
+    "title": "하나의 레포로 클라우드 SaaS와 온프레미스를 함께 운영하기",
+    "slug": "one-repo-saas-and-onprem",
+    "image": "/assets/blog/cover-one-repo-saas-and-onprem.webp",
+    "summary": "같은 코드를 클라우드(AWS) SaaS와 고객사 안의 쿠버네티스(온프레미스) 양쪽에서 돌린 방법을 정리합니다. 특히 인터넷이 막힌 곳에 어떻게 설치했는지를 다룹니다.",
+    "link": "/blog/one-repo-saas-and-onprem",
+    "tags": [
+      "Tech",
+      "Architecture",
+      "Infra",
+      "Kubernetes",
+      "Retrospective",
+      "BuildLog"
+    ],
+    "date": "2026-06-15",
+    "readingTime": 4,
+    "wordCount": 616
+  },
+  {
+    "title": "서비스 사이를 잇는 법, 이벤트 버스와 워크플로우",
+    "slug": "event-bus-nats-temporal",
+    "image": "/assets/blog/cover-event-bus-nats-temporal.webp",
+    "summary": "서비스를 비동기로 잇는 두 도구(NATS 이벤트 버스, Temporal 워크플로우)를 살펴보고, 메시지 보관 기간을 잘못 잡아 데인 사고를 정리합니다.",
+    "link": "/blog/event-bus-nats-temporal",
+    "tags": [
+      "Tech",
+      "Architecture",
+      "Backend",
+      "Retrospective",
+      "BuildLog"
+    ],
+    "date": "2026-06-14",
+    "readingTime": 4,
+    "wordCount": 711
+  },
+  {
+    "title": "인증을 붙이다 만난 무한 리다이렉트 루프",
+    "slug": "auth-bff-redirect-loop",
+    "image": "/assets/blog/cover-auth-bff-redirect-loop.webp",
+    "summary": "로그인 한 번 붙이는 일이 왜 무한 리다이렉트 루프로 이어졌는지, 그리고 쿠키 크기 한계가 설계를 어떻게 바꿨는지 정리합니다.",
+    "link": "/blog/auth-bff-redirect-loop",
+    "tags": [
+      "Tech",
+      "Auth",
+      "Backend",
+      "Frontend",
+      "Retrospective",
+      "BuildLog"
+    ],
+    "date": "2026-06-13",
+    "readingTime": 4,
+    "wordCount": 770
+  },
+  {
+    "title": "모노레포 하나에 15개 서비스를 담은 이유",
+    "slug": "monorepo-15-service-msa",
+    "image": "/assets/blog/cover-monorepo-15-service-msa.webp",
+    "summary": "서비스는 마이크로서비스로 잘게 나누면서, 레포는 하나로 유지한 이유를 정리합니다.",
+    "link": "/blog/monorepo-15-service-msa",
+    "tags": [
+      "Tech",
+      "Architecture",
+      "Backend",
+      "Retrospective",
+      "BuildLog"
+    ],
+    "date": "2026-06-12",
+    "readingTime": 6,
+    "wordCount": 1005
+  },
+  {
+    "title": "6개월간 백엔드·프론트엔드·인프라를 만든 기록 (시리즈 시작)",
+    "slug": "build-log-intro",
+    "image": "/assets/blog/cover-build-log-intro.webp",
+    "summary": "지난 6개월 동안 백엔드, 프론트엔드, 인프라를 0에서 만들고 운영까지 올린 과정을 시리즈로 정리합니다. 이 글은 전체 목차이자 시작점입니다.",
+    "link": "/blog/build-log-intro",
+    "tags": [
+      "Essay",
+      "Retrospective",
+      "Architecture",
+      "BuildLog"
+    ],
+    "date": "2026-06-11",
+    "readingTime": 2,
+    "wordCount": 315
+  },
+  {
+    "title": "왜 지금, Python을 알아야 할까?",
+    "slug": "why-learn-python-now",
+    "image": "/assets/blog/why-learn-python-now.webp",
+    "summary": "",
+    "link": "/blog/why-learn-python-now",
+    "tags": [
+      "Tech",
+      "Python"
+    ],
+    "date": "2025-07-03",
+    "readingTime": 3,
+    "wordCount": 422
+  },
+  {
+    "title": "2025년 상반기, 내가 한 일들 정리 (초안)",
+    "slug": "2025-h1-review",
+    "image": "/assets/blog/retrospective-2025-1h.webp",
+    "summary": "2025년 상반기엔 정신없이 달리는 대신, 왜 달리고 있는가를 더 많이 고민했던 것 같다.  \n기술팀 리더로서의 역할도 조금씩 달라졌고, 나 스스로도 방향을 재정비하는 시기였다.",
+    "link": "/blog/2025-h1-review",
+    "tags": [
+      "Tech",
+      "팀리더십",
+      "성장기록"
+    ],
+    "date": "2025-06-03",
+    "readingTime": 1,
+    "wordCount": 191
+  },
+  {
+    "title": "Amazon Linux 2023 Docker Compose 설치",
+    "slug": "aws-linux-2023-docker",
+    "image": "/assets/blog/unnamed-docker.webp",
+    "summary": "최신 버전의 Docker Compose를 이용하기 위해 Docker Compose 플러그인을 사용해보자.",
+    "link": "/blog/aws-linux-2023-docker",
+    "tags": [
+      "Ops",
+      "AWS"
+    ],
+    "date": "2024-03-21",
+    "readingTime": 1,
+    "wordCount": 76
+  },
+  {
+    "title": "Docker 명령어 정리 (이미지, 컨테이너)",
+    "slug": "docker-commands",
+    "image": "/assets/blog/unnamed-docker.webp",
+    "summary": "Docker와 관련된 기본 명령어를 살펴봅니다.",
+    "link": "/blog/docker-commands",
+    "tags": [
+      "Ops",
+      "Virtualization"
+    ],
+    "date": "2024-03-20",
+    "readingTime": 2,
+    "wordCount": 277
+  },
+  {
+    "title": "PostgreSQL 멀티테넌시 구성 전략 (ft. SaaS 구성)",
+    "slug": "postgresql-saas-multitenancy",
+    "image": "/assets/blog/unnamed-postgresql.webp",
+    "summary": "멀티테넌시의 의미를 알아보고 PostgreSQL 에서 멀티테넌시를 구성하는 방법에 대해서 알아봅니다.",
+    "link": "/blog/postgresql-saas-multitenancy",
+    "tags": [
+      "DB",
+      "PostgreSQL"
+    ],
+    "date": "2023-11-13",
+    "readingTime": 3,
+    "wordCount": 533
+  },
+  {
+    "title": "ERD 자동 생성하는 방법 (ft. DB, SQLite)",
+    "slug": "database-generate-erd",
+    "image": "/assets/blog/unnamed-postgresql.webp",
+    "summary": "ERD(이알디)란 \"Entity Relationship Diagram\"의 약자로, 개체-관계 다이어그램이라고도 하며 말로 되어 있는 요구사항을 분석하여 그림으로 그려내어 그 관계를 도출한 다이어그램을 말합니다.",
+    "link": "/blog/database-generate-erd",
+    "tags": [
+      "DB"
+    ],
+    "date": "2023-11-12",
+    "readingTime": 1,
+    "wordCount": 175
+  },
+  {
+    "title": "Database 설계 방법",
+    "slug": "database-design",
+    "image": "/assets/blog/unnamed-postgresql.webp",
+    "summary": "제일 중요한데 달달 외운 이론은 잘 얘기하면서 설계할 때 뭔지 모르는 사람 너무 많아서 기록",
+    "link": "/blog/database-design",
+    "tags": [
+      "DB"
+    ],
+    "date": "2023-11-11",
+    "readingTime": 2,
+    "wordCount": 257
+  },
+  {
+    "title": "Coroutine 알아보기",
+    "slug": "unity-coroutine",
+    "image": "/assets/blog/unnamed-unity.webp",
+    "summary": "Unity 게임 개발에서 Coroutine(코루틴)은 주요한 개념 중 하나입니다. 이 문서에서는 Unity에서의 Coroutine의 기초부터 심화 내용까지 자세히 살펴보겠습니다. 코루틴은 게임의 성능 향상, 애니메이션 제어, 시간 기반 작업, 백그라운드 작업 등 다양한 상황에서 사용될 수 있습니다.",
+    "link": "/blog/unity-coroutine",
+    "tags": [
+      "Unity"
+    ],
+    "date": "2023-11-10",
+    "readingTime": 2,
+    "wordCount": 351
+  },
+  {
+    "title": "Markdown 글자 크기, 색상, 형광펜 설정 방법",
+    "slug": "markdown-text-color",
+    "image": "/assets/blog/unnamed-markdown.webp",
+    "summary": "마크다운 문서에서 글자 크기 및 색상을 조절하는 방법에 대해서 알아보겠습니다.",
+    "link": "/blog/markdown-text-color",
+    "tags": [
+      "Markdown"
+    ],
+    "date": "2023-11-09",
+    "readingTime": 2,
+    "wordCount": 282
+  },
+  {
+    "title": "블로그 새로 시작하기",
+    "slug": "blog-renewal",
+    "image": "/assets/blog/2023-08-29-blog-history1.webp",
+    "summary": "재테크, 부동산, 건강 등 여러 블로그를 운영하고 있지만, 가장 운영에 고민이 되는 블로그는 항상 개발 블로그인것 같습니다.",
+    "link": "/blog/blog-renewal",
+    "tags": [
+      "Essay"
+    ],
+    "date": "2023-08-29",
+    "readingTime": 2,
+    "wordCount": 201
+  },
+  {
+    "title": "협업을 위한 VSCode 확장프로그램(Extension) 추천",
+    "slug": "vscode-extensions",
+    "image": "/assets/blog/vscode-extensions.webp",
+    "summary": "VSCode에서 사용되는 유용한 확장프로그램(Extension) 추천 포스트입니다.",
+    "link": "/blog/vscode-extensions",
+    "tags": [
+      "MacOS"
+    ],
+    "date": "2022-11-25",
+    "readingTime": 3,
+    "wordCount": 467
+  },
+  {
+    "title": "맥 독(Dock) 뜨는 속도 빠르게 하는 방법",
+    "slug": "mac-dock-speed-up",
+    "image": "/assets/blog/mac-dock-speed-up.webp",
+    "summary": "MacOS 내 독(Dock) 뜨는 속도 더 빠르게 하는 방법입니다.",
+    "link": "/blog/mac-dock-speed-up",
+    "tags": [
+      "MacOS"
+    ],
+    "date": "2022-11-23",
+    "readingTime": 1,
+    "wordCount": 140
+  },
+  {
+    "title": "Node.js, NPM 제거하는 방법 - MAC",
+    "slug": "nodejs-uninstall",
+    "image": "/assets/blog/nodejs-uninstall.webp",
+    "summary": "Node.js 버전 변경이나 충돌 등 여러 문제로 인해 Node.js를 지워야 하는 경우, 깔끔히 지우는 방법을 알려드립니다.",
+    "link": "/blog/nodejs-uninstall",
+    "tags": [
+      "NodeJS",
+      "MacOS"
+    ],
+    "date": "2022-11-21",
+    "readingTime": 1,
+    "wordCount": 155
+  },
+  {
+    "title": "맥 화면캡처 시, 창 그림자 제거 방법",
+    "slug": "mac-remove-window-shadow",
+    "image": "/assets/blog/mac-remove-window-shadow.webp",
+    "summary": "맥에서 창 영역을 캡쳐할 때, 창 크기보다 넓은 영역(그림자 포함)의 결과물이 나오는 경우의 대처 방법입니다.",
+    "link": "/blog/mac-remove-window-shadow",
+    "tags": [
+      "MacOS"
+    ],
+    "date": "2022-11-19",
+    "readingTime": 2,
+    "wordCount": 246
+  },
+  {
+    "title": "맥 자동실행 항목 설정 방법",
+    "slug": "mac-startup-program",
+    "image": "/assets/blog/mac-startup-program.webp",
+    "summary": "Mac 부팅 또는 로그인 시 자동으로 실행되는 시작프로그램을 관리하는 방법입니다.",
+    "link": "/blog/mac-startup-program",
+    "tags": [
+      "MacOS"
+    ],
+    "date": "2022-11-19",
+    "readingTime": 1,
+    "wordCount": 174
+  },
+  {
+    "title": "npm 사용하지 않는 모듈 제거하는 방법 (depcheck)",
+    "slug": "npm-remove-unused-packages",
+    "image": "/assets/blog/npm-remove-unused-packages.webp",
+    "summary": "프로젝트 내부에서 사용하지 않는 npm module을 package.json에서 확인 및 제거하는 방법입니다.",
+    "link": "/blog/npm-remove-unused-packages",
+    "tags": [
+      "NPM"
+    ],
+    "date": "2022-09-08",
+    "readingTime": 1,
+    "wordCount": 159
+  },
+  {
+    "title": "npm package.json 순서 정렬하는 방법 (sort-package-json)",
+    "slug": "npm-sort-package-json",
+    "image": "/assets/blog/npm-sort-package-json.webp",
+    "summary": "npm install 할 때, 설치한 순서대로 작성되는 package.json을 알파벳 순서로 정리하는 방법입니다.",
+    "link": "/blog/npm-sort-package-json",
+    "tags": [
+      "NPM"
+    ],
+    "date": "2022-09-08",
+    "readingTime": 1,
+    "wordCount": 137
+  }
+]

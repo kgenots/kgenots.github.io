@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Product Architecture Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f6f8fc;
+    --bg-panel: #ffffff;
+    --bg-tile: #f2f5fa;
+    --bg-tile-2: #e7ecf5;
+    --border: #dde3ee;
+    --border-strong: #c2cbdc;
+    --fg: #1a2138;
+    --fg-dim: #4c5772;
+    --fg-muted: #8a93a8;
+
+    --c-user: #d97706;
+    --c-frontend: #0891b2;
+    --c-product: #059669;
+    --c-platform: #2563eb;
+    --c-domain: #7c3aed;
+    --c-worker: #ea580c;
+
+    --c-aws: #e67e00;
+    --c-k3s: #db2777;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, sans-serif; }
+  body { padding: 28px 32px 80px; max-width: 1680px; margin: 0 auto; }
+  code, .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--fg-dim); }
+
+  h1 { font-size: 1.7rem; font-weight: 800; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .sub { color: var(--fg-dim); font-size: 0.92rem; margin: 0 0 6px; }
+  .meta { color: var(--fg-muted); font-size: 0.78rem; margin: 0 0 18px; }
+
+  .band { margin: 0 0 8px; padding: 16px 20px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; position: relative; }
+  .band::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 10px 0 0 10px; }
+  .band.l-user::before { background: var(--c-user); }
+  .band.l-frontend::before { background: var(--c-frontend); }
+  .band-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 12px; }
+  .band-head h2 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-muted); margin: 0; }
+  .band-head .note { color: var(--fg-muted); font-size: 0.76rem; font-family: 'JetBrains Mono', monospace; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px; }
+  .col { display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 18px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
+  .col.aws { background: linear-gradient(180deg, rgba(230,126,0,0.07), rgba(230,126,0,0.015)); border-color: #f0d3a8; }
+  .col.k3s { background: linear-gradient(180deg, rgba(219,39,119,0.07), rgba(219,39,119,0.015)); border-color: #f3c2dd; }
+  .col-head { display: flex; flex-direction: column; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+  .col-head .tag { display: inline-flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .col.aws .tag { color: var(--c-aws); }
+  .col.k3s .tag { color: var(--c-k3s); }
+  .col-head .title { font-size: 1.18rem; font-weight: 800; letter-spacing: -0.01em; }
+  .col-head .desc { font-size: 0.8rem; color: var(--fg-dim); line-height: 1.45; min-height: 4.4em; }
+
+  .block { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .block-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+  .block-title .pill { background: var(--bg-tile-2); color: var(--fg-dim); padding: 2px 8px; border-radius: 99px; font-size: 0.64rem; letter-spacing: 0.06em; }
+  .block-title .pill.new { background: #d1fae5; color: #047857; }
+  .col.aws .block-title::before { content: ''; width: 8px; height: 8px; border-radius: 2px; background: var(--c-aws); display: inline-block; }
+  .col.k3s .block-title::before { content: ''; width: 8px; height: 8px; border-radius: 2px; background: var(--c-k3s); display: inline-block; }
+
+  .conn { text-align: center; color: var(--fg-muted); font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; padding: 1px 0; }
+  .conn::before { content: '▼'; display: block; color: var(--border-strong); font-size: 0.68rem; }
+
+  .row { display: grid; gap: 8px; }
+  .row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .row + .row { margin-top: 8px; }
+
+  .tile { background: var(--bg-tile); border: 1px solid var(--border); border-left: 3px solid var(--border-strong); border-radius: 6px; padding: 9px 11px; min-height: 56px; display: flex; flex-direction: column; justify-content: center; }
+  .tile .name { font-weight: 600; font-size: 0.84rem; color: var(--fg); line-height: 1.2; }
+  .tile .desc { font-size: 0.7rem; color: var(--fg-dim); margin-top: 4px; line-height: 1.36; }
+  .t-user { border-left-color: var(--c-user); }
+  .t-frontend { border-left-color: var(--c-frontend); }
+  .t-product { border-left-color: var(--c-product); }
+  .t-platform { border-left-color: var(--c-platform); }
+  .t-domain { border-left-color: var(--c-domain); }
+  .t-worker { border-left-color: var(--c-worker); }
+  .t-aws { border-left-color: var(--c-aws); }
+  .t-k3s { border-left-color: var(--c-k3s); }
+
+  .routes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .route { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; background: var(--bg-tile-2); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; color: var(--fg-dim); }
+
+  .strip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; padding: 9px 11px; background: var(--bg-tile); border: 1px dashed var(--border-strong); border-radius: 6px; }
+  .strip .item { font-size: 0.72rem; color: var(--fg-dim); }
+  .strip .item b { color: var(--fg); font-weight: 600; }
+
+  .badge-new { display: inline-block; background: #d1fae5; color: #047857; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; padding: 1px 6px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 14px 0 8px; padding: 12px 16px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--fg-dim); }
+  .dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  footer { margin-top: 22px; padding: 14px 18px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; color: var(--fg-dim); font-size: 0.82rem; line-height: 1.6; }
+  footer code { background: var(--bg-tile); padding: 1px 6px; border-radius: 4px; }
+
+  @media (max-width: 1100px) { .split { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Product Architecture Overview</h1>
+  <p class="sub">엔드 서비스 2종 ·  <b style="color:var(--c-aws)">Product A — AI Ready Data SaaS (AWS)</b>  ·  <b style="color:var(--c-k3s)">Product B — LLM 보안 게이트 (K3s 어플라이언스)</b>  — 공통 Frontend / Auth + 백엔드 서비스를 양 플랫폼에 배포</p>
+  <p class="meta">역할 중심 아키텍처 · 마이크로서비스 모노레포 (frontend / backend / infra)</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><span class="dot" style="background:var(--c-frontend)"></span>Frontend SPA</div>
+  <div class="legend-item"><span class="dot" style="background:var(--c-product)"></span>Product (제품 진입점)</div>
+  <div class="legend-item"><span class="dot" style="background:var(--c-platform)"></span>Platform / Core (공통)</div>
+  <div class="legend-item"><span class="dot" style="background:var(--c-domain)"></span>Domain (단일 책임)</div>
+  <div class="legend-item"><span class="dot" style="background:var(--c-worker)"></span>Worker (비동기)</div>
+  <div class="legend-item"><span class="dot" style="background:var(--c-aws)"></span>AWS 인프라</div>
+  <div class="legend-item"><span class="dot" style="background:var(--c-k3s)"></span>K3s 인프라</div>
+</div>
+
+<!-- ============ TWO COLUMNS ============ -->
+<div class="split">
+
+  <!-- ====== COLUMN A: AWS / Product A SaaS ====== -->
+  <div class="col aws">
+    <div class="col-head">
+      <span class="tag">◆ End Service A · AWS</span>
+      <span class="title">Product A — AI Ready Data SaaS (멀티테넌트)</span>
+      <span class="desc">AI Ready Data 제품. 여러 고객이 한 클라우드를 공유. 인증·데이터·과금을 AWS 매니지드 서비스에 위임하고 백엔드는 컨테이너로 운영.</span>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Users · 사용자</div>
+      <div class="row cols-1" style="grid-template-columns:1fr">
+        <div class="tile t-user"><div class="name">Product A Customer</div><div class="desc">AI Ready Data를 생성·다운로드하는 SaaS 고객 (멀티테넌트)</div></div>
+      </div>
+    </div>
+    <div class="conn">로그인 · 제품 화면</div>
+
+    <div class="block">
+      <div class="block-title">Frontend</div>
+      <div class="row cols-2">
+        <div class="tile t-frontend"><div class="name">product-a-web</div><div class="desc">AI Ready Data 생성·시각화·리포트 대시보드. 제품 A의 사용자 화면</div></div>
+        <div class="tile t-frontend"><div class="name">auth-web <span style="font-size:0.6rem;color:var(--fg-muted)">· 공통</span></div><div class="desc">로그인·회원가입 화면, Auth Code 발급. 양 제품 공통 인증 관문</div></div>
+      </div>
+    </div>
+    <div class="conn">Authorization: Bearer</div>
+
+    <div class="block">
+      <div class="block-title">Edge · 트래픽 관문</div>
+      <div class="row cols-2">
+        <div class="tile t-aws"><div class="name">CloudFront</div><div class="desc">SPA를 전 세계에 배포하고 보안 헤더를 입히는 CDN 진입점</div></div>
+        <div class="tile t-aws"><div class="name">Cognito</div><div class="desc">이메일·소셜 로그인 사용자 풀. 신원 발급·검증 담당</div></div>
+      </div>
+      <div class="row cols-2">
+        <div class="tile t-aws"><div class="name">API Gateway</div><div class="desc">외부 API 요청의 단일 입구. 인가 검사 후 내부 서비스로 라우팅</div></div>
+        <div class="tile t-aws"><div class="name">WAF · ALB</div><div class="desc">공격 차단(WAF)과 실시간 통신용 로드밸런서</div></div>
+      </div>
+    </div>
+    <div class="conn">인가 통과 후 내부 라우팅</div>
+
+    <div class="block">
+      <div class="block-title">Product Service <span class="pill">제품 진입점</span></div>
+      <div class="row cols-2">
+        <div class="tile t-product"><div class="name">product-a <b style="color:var(--c-aws)">★</b></div><div class="desc">제품 A의 두뇌. datasets·agent·billing을 합성해 제품 화면이 필요로 하는 응답을 조립</div></div>
+        <div class="tile t-product" style="opacity:0.5"><div class="name">product-b</div><div class="desc">제품 B 서비스 — K3s 어플라이언스 전용</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Platform / Core <span class="pill">전 제품 공통</span></div>
+      <div class="row cols-2">
+        <div class="tile t-platform"><div class="name">account</div><div class="desc">사용자·인증. Cognito/Keycloak을 감싸 로그인·토큰을 처리</div></div>
+        <div class="tile t-platform"><div class="name">organization</div><div class="desc">조직·멤버십·초대 관리</div></div>
+      </div>
+      <div class="row cols-3">
+        <div class="tile t-platform"><div class="name">billing</div><div class="desc">결제·구독·크레딧 정산</div></div>
+        <div class="tile t-platform"><div class="name">community</div><div class="desc">커뮤니티·고객 지원</div></div>
+        <div class="tile t-platform"><div class="name">observability</div><div class="desc">감사 로그·사용량 집계(읽기 전용)</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Domain <span class="pill">단일 책임</span></div>
+      <div class="row cols-2">
+        <div class="tile t-domain"><div class="name">datasets</div><div class="desc">데이터셋 등록·검증·버전 관리</div></div>
+        <div class="tile t-domain"><div class="name">agent</div><div class="desc">에이전트 정의·실행 메타 관리, 실행 이벤트 발행</div></div>
+      </div>
+      <div class="row cols-2">
+        <div class="tile t-domain"><div class="name">llmgateway</div><div class="desc">여러 LLM 프로바이더를 하나의 인터페이스로 추상화</div></div>
+        <div class="tile t-domain" style="opacity:0.5"><div class="name">rag</div><div class="desc">문서 검색 — K3s 전용, AWS 미배포</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Workers <span class="pill">비동기 처리</span></div>
+      <div class="row cols-2">
+        <div class="tile t-worker"><div class="name">general-worker</div><div class="desc">이메일·알림 등 크로스서비스 비동기 잡, 비식별 워크플로</div></div>
+        <div class="tile t-worker"><div class="name">worker-agent-runner</div><div class="desc">에이전트 실행 파이프라인을 워크플로로 구동</div></div>
+      </div>
+      <div class="row cols-2">
+        <div class="tile t-worker"><div class="name">worker-event-forwarder</div><div class="desc">이벤트를 분석 레이크·외부 시스템으로 전달</div></div>
+        <div class="tile t-worker"><div class="name">worker-notification-sender</div><div class="desc">알림·메일을 실제 채널로 송신</div></div>
+      </div>
+    </div>
+    <div class="conn">데이터 영속화 · 이벤트</div>
+
+    <div class="block">
+      <div class="block-title">Data &amp; Bus <span class="pill">AWS 관리형</span> <span class="pill">+ 셀프호스트 버스</span></div>
+      <div class="row cols-2">
+        <div class="tile t-aws"><div class="name">RDS Aurora PostgreSQL</div><div class="desc">서비스들의 주 트랜잭션 DB (관리형)</div></div>
+        <div class="tile t-aws"><div class="name">S3 Event Lake</div><div class="desc">이벤트·분석 원본 객체 저장소 (관리형)</div></div>
+      </div>
+      <div class="row cols-2">
+        <div class="tile t-aws"><div class="name">EventBridge · Batch</div><div class="desc">워크플로 트리거·대용량 배치 (관리형)</div></div>
+        <div class="tile t-aws"><div class="name">Secrets Manager · SES</div><div class="desc">시크릿 보관·이메일 발송 (관리형)</div></div>
+      </div>
+      <div class="row cols-3">
+        <div class="tile t-aws"><div class="name">NATS</div><div class="desc">서비스 간 이벤트 버스 (ECS 셀프호스트)</div></div>
+        <div class="tile t-aws"><div class="name">Temporal</div><div class="desc">비동기 워크플로 엔진 (ECS, DB는 Aurora)</div></div>
+        <div class="tile t-aws"><div class="name">BI 대시보드</div><div class="desc">분석 대시보드 (셀프호스트, Aurora 조회)</div></div>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="item"><b>배포:</b> AWS CodePipeline — 빌드·테스트·마이그레이션·배포 자동화. <code>develop</code>→dev, <code>main</code>→prod</div>
+    </div>
+  </div>
+
+  <!-- ====== COLUMN B: K3s / Product B Appliance ====== -->
+  <div class="col k3s">
+    <div class="col-head">
+      <span class="tag">◆ End Service B · K3s On-prem</span>
+      <span class="title">Product B — LLM 보안 게이트 어플라이언스 (단일테넌트)</span>
+      <span class="desc">고객사 데이터센터에 통째로 설치되는 LLM 보안 게이트. 데이터가 외부로 안 나가도록 저장소·인증·모델 추론까지 클러스터 안에서 자급. 오프라인 환경 양립.</span>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Users · 사용자</div>
+      <div class="row cols-1" style="grid-template-columns:1fr">
+        <div class="tile t-user"><div class="name">Product B Operator</div><div class="desc">고객사 내부에서 LLM 보안 채팅을 쓰는 사내 사용자·관리자 (단일테넌트)</div></div>
+      </div>
+    </div>
+    <div class="conn">로그인 · 제품 화면</div>
+
+    <div class="block">
+      <div class="block-title">Frontend <span class="pill">클러스터 내 호스팅</span></div>
+      <div class="row cols-2">
+        <div class="tile t-frontend"><div class="name">product-b-client-web</div><div class="desc">LLM 채팅·비식별·비교·관리자 화면. SaaS/온프레 분기</div></div>
+        <div class="tile t-frontend"><div class="name">auth-web <span style="font-size:0.6rem;color:var(--fg-muted)">· 공통</span></div><div class="desc">로그인 화면, Auth Code 발급. 온프레 브랜드 카드로 분기</div></div>
+      </div>
+    </div>
+    <div class="conn">Authorization: Bearer</div>
+
+    <div class="block">
+      <div class="block-title">Ingress &amp; Auth · 관문/인증</div>
+      <div class="row cols-3">
+        <div class="tile t-k3s"><div class="name">Traefik</div><div class="desc">온프레미스 인그레스·라우팅</div></div>
+        <div class="tile t-k3s"><div class="name">Keycloak</div><div class="desc">신원·세션 발급(OIDC), 세션 정책 관리</div></div>
+        <div class="tile t-k3s"><div class="name">OPA-Proxy</div><div class="desc">모든 요청의 인가를 정책으로 판정하는 게이트</div></div>
+      </div>
+    </div>
+    <div class="conn">인가 통과 후 서비스 호출</div>
+
+    <div class="block">
+      <div class="block-title">Product Service <span class="pill">제품 진입점</span></div>
+      <div class="row cols-2">
+        <div class="tile t-product"><div class="name">product-b <b style="color:var(--c-k3s)">★</b></div><div class="desc">제품 B의 두뇌. 채팅·문서 비식별·RAG를 묶어 안전한 LLM 응답을 조립</div></div>
+        <div class="tile t-product" style="opacity:0.5"><div class="name">product-a</div><div class="desc">제품 A 서비스 — AWS 전용, K3s 미배포</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Platform / Core <span class="pill">전 제품 공통</span></div>
+      <div class="row cols-2">
+        <div class="tile t-platform"><div class="name">account</div><div class="desc">사용자·인증. Keycloak을 감싸 로그인·토큰을 처리</div></div>
+        <div class="tile t-platform"><div class="name">organization</div><div class="desc">조직·멤버십·초대 관리</div></div>
+      </div>
+      <div class="row cols-3">
+        <div class="tile t-platform"><div class="name">billing</div><div class="desc">결제·구독·크레딧 정산</div></div>
+        <div class="tile t-platform"><div class="name">community</div><div class="desc">커뮤니티·고객 지원</div></div>
+        <div class="tile t-platform"><div class="name">observability</div><div class="desc">감사 로그·사용량 집계(읽기 전용)</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Domain <span class="pill">단일 책임</span></div>
+      <div class="row cols-2">
+        <div class="tile t-domain" style="opacity:0.5"><div class="name">datasets</div><div class="desc">데이터셋 등록·검증 — AWS 전용, K3s 미배포</div></div>
+        <div class="tile t-domain"><div class="name">agent</div><div class="desc">에이전트 정의·실행 메타 관리, 실행 이벤트 발행</div></div>
+      </div>
+      <div class="row cols-2">
+        <div class="tile t-domain"><div class="name">llmgateway</div><div class="desc">여러 LLM 프로바이더를 하나의 인터페이스로 추상화. PII 마스킹 경유</div></div>
+        <div class="tile t-domain"><div class="name">rag <b style="color:var(--c-k3s)">★ K3s 전용</b></div><div class="desc">사내 문서를 임베딩·검색하고 질의 의도를 분류</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Workers <span class="pill">비동기 처리</span></div>
+      <div class="row cols-2">
+        <div class="tile t-worker"><div class="name">general-worker</div><div class="desc">알림·비식별 워크플로 등 크로스서비스 비동기 잡</div></div>
+        <div class="tile t-worker"><div class="name">worker-agent-runner</div><div class="desc">에이전트 실행 파이프라인을 워크플로로 구동</div></div>
+      </div>
+      <div class="row cols-2">
+        <div class="tile t-worker"><div class="name">worker-event-forwarder</div><div class="desc">이벤트를 분석·외부 시스템으로 전달</div></div>
+        <div class="tile t-worker"><div class="name">worker-notification-sender</div><div class="desc">알림·메일을 실제 채널로 송신(SMTP)<span class="badge-new">NEW</span></div></div>
+      </div>
+      <div class="row cols-2">
+        <div class="tile t-worker"><div class="name">data-redaction-sync</div><div class="desc">파일 비식별 처리를 동기화 (K3s 전용)</div></div>
+        <div class="tile t-worker"><div class="name">admin-analytics-refresh</div><div class="desc">관리자 분석 데이터 갱신<span class="badge-new">NEW</span></div></div>
+      </div>
+    </div>
+    <div class="conn">클러스터 내 영속화 · 추론</div>
+
+    <div class="block">
+      <div class="block-title">In-cluster Data / Infra <span class="pill">자급</span></div>
+      <div class="row cols-2">
+        <div class="tile t-k3s"><div class="name">PostgreSQL + PgBouncer</div><div class="desc">앱 데이터베이스와 커넥션 풀</div></div>
+        <div class="tile t-k3s"><div class="name">RustFS</div><div class="desc">S3 호환 객체 저장소. 업로드 파일·비식별 산출물 보관</div></div>
+      </div>
+      <div class="row cols-3">
+        <div class="tile t-k3s"><div class="name">Qdrant</div><div class="desc">RAG 벡터 저장소</div></div>
+        <div class="tile t-k3s"><div class="name">NATS · Temporal</div><div class="desc">이벤트 버스·워크플로 엔진</div></div>
+        <div class="tile t-k3s"><div class="name">Secret Manager · OCI Registry</div><div class="desc">시크릿 관리·사내 이미지 레지스트리</div></div>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="item"><b>배포:</b> CI 파이프라인 — main 머지 시 변경된 네임스페이스를 클러스터에 자동 적용. 설치는 어플라이언스 인스톨러로 일괄</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <b>참고.</b>
+  1) 두 엔드 서비스는 같은 <code>backend</code> 컨테이너를 공유 — account · organization · billing · community · product-b · llmgateway · agent 는 AWS / K3s 양쪽에서 동일 이미지로 동작(HA·오프라인 양립).<br>
+  2) AWS 전용 = 매니지드 데이터 플레인(Aurora·EventBridge·Batch·SES·BI) + datasets. K3s 전용 = rag(문서 검색), 클러스터 내장 DB·저장소·버스. (사내 LLM 추론·CI/CD·관측은 별도 운영 플랫폼 장표 참조)<br>
+  3) Product A / Product B = "제품 서비스" — 단순 BFF가 아니라 제품 도메인 로직 + 하위 서비스 합성을 함께 수행.<br>
+  4) Product B 핵심 가치 = 입력·문서의 개인정보를 비식별 처리한 뒤 LLM에 전달해 데이터 유출 없이 LLM을 활용.<br>
+  5) <code>auth-web</code> 는 두 제품 공통 인증 관문(양 컬럼에 표기).
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[5736],{5736:(e,s,k)=>{k.r(s)}}]);

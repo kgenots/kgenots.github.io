@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[7613],{7613:(e,s,a)=>{a.r(s),a.d(s,{DocSearchModal:()=>k.a1});var k=a(4353)}}]);
