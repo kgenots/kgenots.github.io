@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[9903],{5844:s=>{s.exports=JSON.parse('{"tag":{"label":"Ops","permalink":"/blog/tags/ops","allTagsPath":"/blog/tags","count":5,"unlisted":false},"listMetadata":{"permalink":"/blog/tags/ops","page":1,"postsPerPage":5,"totalPages":1,"totalCount":5,"blogDescription":"KGENOTS Blog","blogTitle":"Blog"}}')}}]);
