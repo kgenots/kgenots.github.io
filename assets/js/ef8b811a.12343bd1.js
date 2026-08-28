@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkkgenots=self.webpackChunkkgenots||[]).push([[8947],{6600:t=>{t.exports=JSON.parse('{"authors":[{"name":"KGENOTS","title":"KGENOTS","url":"https://github.com/kgenots","imageURL":"https://github.com/kgenots.png","key":"kgenots","page":null,"count":18}]}')}}]);

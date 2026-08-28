@@ -1,5 +1,19 @@
 [
   {
+    "title": "나머지 연산 없는 빠른 요일 계산, 곱셈 한 번이면 됩니다",
+    "slug": "fast-day-of-week",
+    "image": "/assets/blog/cover-fast-day-of-week.webp",
+    "summary": "날짜에서 요일을 구할 때 흔히 쓰는 `% 7` 없이, 곱셈 한 번과 시프트만으로 요일을 구하는 방법을 Ben Joffe의 글 [Fast day-of-week computation](https://www.benjoffe.com/fast-day-of-week)을 바탕으로 정리합니다.",
+    "link": "/blog/fast-day-of-week",
+    "tags": [
+      "Reference",
+      "Algorithm"
+    ],
+    "date": "2026-08-28",
+    "readingTime": 6,
+    "wordCount": 1126
+  },
+  {
     "title": "인터넷 없는 환경에 컨테이너 배포하기 (에어갭)",
     "slug": "airgap-container-install",
     "image": "/assets/blog/cover-airgap-container-install.webp",
