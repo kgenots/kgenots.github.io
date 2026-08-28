@@ -26,7 +26,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 527
+    "wordCount": 523
   },
   {
     "title": "S3 Parquet를 DuckDB로 조회하기",
@@ -41,7 +41,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 491
+    "wordCount": 487
   },
   {
     "title": "gRPC 헬스체크, HTTP만으론 부족한 이유",
@@ -56,7 +56,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 555
+    "wordCount": 551
   },
   {
     "title": "모노레포 워크스페이스 도구 이해하기 (공유 패키지와 증분 빌드)",
@@ -71,7 +71,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 514
+    "wordCount": 520
   },
   {
     "title": "NATS JetStream 스트림 보관 정책 이해하기",
@@ -86,7 +86,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 493
+    "wordCount": 508
   },
   {
     "title": "OAuth 토큰, 어디에 저장할까 (쿠키 vs localStorage)",
@@ -102,7 +102,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 4,
-    "wordCount": 769
+    "wordCount": 770
   },
   {
     "title": "OPA로 API 권한(인가)을 외부화하기",
@@ -117,7 +117,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 524
+    "wordCount": 512
   },
   {
     "title": "SPA를 한 번 빌드해 여러 환경에 띄우기 (런타임 설정)",
@@ -132,7 +132,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 540
+    "wordCount": 544
   },
   {
     "title": "Temporal로 보상(Saga) 트랜잭션 다루기",
@@ -147,7 +147,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 501
+    "wordCount": 508
   },
   {
     "title": "TSID vs UUID, 정렬 가능한 ID 만들기",
@@ -162,7 +162,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 524
+    "wordCount": 517
   },
   {
     "title": "6개월을 돌아보며, 다시 시작한다면",
@@ -195,7 +195,7 @@
     ],
     "date": "2026-06-17",
     "readingTime": 3,
-    "wordCount": 562
+    "wordCount": 543
   },
   {
     "title": "하나의 코드베이스로 여러 웹 앱 만들기",
@@ -212,7 +212,7 @@
     ],
     "date": "2026-06-16",
     "readingTime": 3,
-    "wordCount": 542
+    "wordCount": 530
   },
   {
     "title": "하나의 레포로 클라우드 SaaS와 온프레미스를 함께 운영하기",
@@ -230,7 +230,7 @@
     ],
     "date": "2026-06-15",
     "readingTime": 4,
-    "wordCount": 616
+    "wordCount": 601
   },
   {
     "title": "서비스 사이를 잇는 법, 이벤트 버스와 워크플로우",
@@ -247,7 +247,7 @@
     ],
     "date": "2026-06-14",
     "readingTime": 4,
-    "wordCount": 711
+    "wordCount": 685
   },
   {
     "title": "인증을 붙이다 만난 무한 리다이렉트 루프",
@@ -265,7 +265,7 @@
     ],
     "date": "2026-06-13",
     "readingTime": 4,
-    "wordCount": 770
+    "wordCount": 741
   },
   {
     "title": "모노레포 하나에 15개 서비스를 담은 이유",
@@ -281,8 +281,8 @@
       "BuildLog"
     ],
     "date": "2026-06-12",
-    "readingTime": 6,
-    "wordCount": 1005
+    "readingTime": 5,
+    "wordCount": 975
   },
   {
     "title": "6개월간 백엔드·프론트엔드·인프라를 만든 기록 (시리즈 시작)",
@@ -298,13 +298,13 @@
     ],
     "date": "2026-06-11",
     "readingTime": 2,
-    "wordCount": 315
+    "wordCount": 316
   },
   {
     "title": "왜 지금, Python을 알아야 할까?",
     "slug": "why-learn-python-now",
     "image": "/assets/blog/why-learn-python-now.webp",
-    "summary": "",
+    "summary": "AI, 데이터, 자동화, 그리고 새로운 직군들이 생겨나고 있습니다.  \n‘MLOps 엔지니어’, ‘AI 리서처’, ‘데이터 퍼블리셔’…  \n이런 변화 속에서 개발자는 어떤 기술을 배우고, 어떤 도구를 익혀야 할까요?",
     "link": "/blog/why-learn-python-now",
     "tags": [
       "Tech",
@@ -312,7 +312,7 @@
     ],
     "date": "2025-07-03",
     "readingTime": 3,
-    "wordCount": 422
+    "wordCount": 420
   },
   {
     "title": "2025년 상반기, 내가 한 일들 정리 (초안)",
@@ -408,7 +408,7 @@
     ],
     "date": "2023-11-10",
     "readingTime": 2,
-    "wordCount": 351
+    "wordCount": 350
   },
   {
     "title": "Markdown 글자 크기, 색상, 형광펜 설정 방법",
