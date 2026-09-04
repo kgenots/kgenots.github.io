@@ -1,5 +1,21 @@
 [
   {
+    "title": "privileged: true인데 permission denied가 났습니다",
+    "slug": "privileged-non-root-capabilities",
+    "image": "/assets/blog/cover-privileged-non-root-capabilities.webp",
+    "summary": "컨테이너가 비 root 사용자로 실행되면 `privileged: true`를 지정해도 capability가 전달되지 않습니다. 커널이 UID를 전환하면서 permitted 집합과 effective 집합을 비우기 때문입니다.",
+    "link": "/blog/privileged-non-root-capabilities",
+    "tags": [
+      "Reference",
+      "Kubernetes",
+      "Ops",
+      "Linux"
+    ],
+    "date": "2026-09-04",
+    "readingTime": 3,
+    "wordCount": 498
+  },
+  {
     "title": "나머지 연산 없는 빠른 요일 계산, 곱셈 한 번이면 됩니다",
     "slug": "fast-day-of-week",
     "image": "/assets/blog/cover-fast-day-of-week.webp",

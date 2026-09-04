@@ -4,10 +4,60 @@
         <title>KGENOTS Blog</title>
         <link>https://kgenots.com/blog</link>
         <description>KGENOTS Blog</description>
-        <lastBuildDate>Fri, 28 Aug 2026 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 04 Sep 2026 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>ko</language>
+        <item>
+            <title><![CDATA[privileged: true인데 permission denied가 났습니다]]></title>
+            <link>https://kgenots.com/blog/privileged-non-root-capabilities</link>
+            <guid>https://kgenots.com/blog/privileged-non-root-capabilities</guid>
+            <pubDate>Fri, 04 Sep 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[컨테이너가 비 root 사용자로 실행되면 privileged: true를 지정해도 capability가 전달되지 않습니다. 커널이 UID를 전환하면서 permitted 집합과 effective 집합을 비우기 때문입니다.]]></description>
+            <content:encoded><![CDATA[<p>컨테이너가 비 root 사용자로 실행되면 <code>privileged: true</code>를 지정해도 capability가 전달되지 않습니다. 커널이 UID를 전환하면서 permitted 집합과 effective 집합을 비우기 때문입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="백업이-조용히-멈췄습니다">백업이 조용히 멈췄습니다<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%EB%B0%B1%EC%97%85%EC%9D%B4-%EC%A1%B0%EC%9A%A9%ED%9E%88-%EB%A9%88%EC%B7%84%EC%8A%B5%EB%8B%88%EB%8B%A4" class="hash-link" aria-label="백업이 조용히 멈췄습니다에 대한 직접 링크" title="백업이 조용히 멈췄습니다에 대한 직접 링크" translate="no">​</a></h2>
+<p>velero로 PVC를 백업하는데 어느 날부터 파일시스템 백업만 누락되기 시작했습니다. velero server 파드는 계속 Running이었고 백업 오브젝트도 만들어졌습니다. 상태만 <code>PartiallyFailed</code>였습니다.</p>
+<p>파일시스템 백업을 담당하는 쪽은 <code>node-agent</code> DaemonSet입니다. 로그에는 한 줄이 반복되고 있었습니다.</p>
+<div class="language-text codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-text codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">open /host_pods/: permission denied</span><br></div></code></pre></div></div>
+<p>매니페스트에는 <code>privileged: true</code>가 있었습니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="요청한-capability와-실제-capability가-다릅니다">요청한 capability와 실제 capability가 다릅니다<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%EC%9A%94%EC%B2%AD%ED%95%9C-capability%EC%99%80-%EC%8B%A4%EC%A0%9C-capability%EA%B0%80-%EB%8B%A4%EB%A6%85%EB%8B%88%EB%8B%A4" class="hash-link" aria-label="요청한 capability와 실제 capability가 다릅니다에 대한 직접 링크" title="요청한 capability와 실제 capability가 다릅니다에 대한 직접 링크" translate="no">​</a></h2>
+<p><code>privileged: true</code>를 지정했는데 권한이 없다면 요청값과 결과값을 따로 확인해야 합니다. 컨테이너가 실제로 어떤 사용자와 capability로 실행 중인지는 <code>crictl</code>로 봅니다.</p>
+<div class="language-bash codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-bash codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">crictl inspect &lt;container-id&gt; \</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  | jq '.info.runtimeSpec.process | {user, capabilities}'</span><br></div></code></pre></div></div>
+<p>여기에는 요청한 capability 41개가 그대로 보입니다. 프로세스가 실제로 보유한 값은 다릅니다. 같은 uid로 프로브 파드를 띄워 <code>/proc/self/status</code>를 직접 읽으면 차이가 드러납니다.</p>
+<div class="language-bash codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-bash codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">kubectl run capprobe --rm -it --restart=Never --image=nginx:alpine \</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  --overrides='{"spec":{"containers":[{"name":"p","image":"nginx:alpine",</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  "securityContext":{"privileged":true,"runAsUser":1002},</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  "command":["grep","Cap","/proc/self/status"]}]}}'</span><br></div></code></pre></div></div>
+<table><thead><tr><th>집합</th><th>값</th></tr></thead><tbody><tr><td>CapBnd (bounding)</td><td>41개 전부</td></tr><tr><td>CapPrm (permitted)</td><td>0</td></tr><tr><td>CapEff (effective)</td><td>0</td></tr></tbody></table>
+<p><span style="background-color:#fff5b1"><code>privileged: true</code>는 bounding set만 채웁니다.</span> 실제로 권한을 행사하는 effective set은 비어 있습니다. 매니페스트만 읽어서는 이 차이가 보이지 않습니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="커널이-uid를-전환할-때-집합을-비웁니다">커널이 UID를 전환할 때 집합을 비웁니다<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%EC%BB%A4%EB%84%90%EC%9D%B4-uid%EB%A5%BC-%EC%A0%84%ED%99%98%ED%95%A0-%EB%95%8C-%EC%A7%91%ED%95%A9%EC%9D%84-%EB%B9%84%EC%9B%81%EB%8B%88%EB%8B%A4" class="hash-link" aria-label="커널이 UID를 전환할 때 집합을 비웁니다에 대한 직접 링크" title="커널이 UID를 전환할 때 집합을 비웁니다에 대한 직접 링크" translate="no">​</a></h2>
+<p><code>capabilities(7)</code> 문서에 규칙이 적혀 있습니다.</p>
+<blockquote>
+<p>If the effective user ID is changed from nonzero to 0, then the permitted set is copied to the effective set.</p>
+</blockquote>
+<p>0에서 0이 아닌 값으로 바뀔 때는 반대로 동작합니다. 커널이 permitted 집합과 effective 집합을 비웁니다. <code>SECBIT_NO_SETUID_FIXUP</code> 시큐어비트를 설정하면 이 동작을 막을 수 있지만, 컨테이너 런타임은 이 비트를 설정하지 않습니다. Docker에서도 같은 동작이 보고되어 있습니다.</p>
+<p>bounding set은 앞으로 획득할 수 있는 capability의 상한만 정합니다. 이미 비워진 effective set을 되살리지는 않습니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="이미지의-기본-사용자가-root가-아니었습니다">이미지의 기본 사용자가 root가 아니었습니다<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%EC%9D%B4%EB%AF%B8%EC%A7%80%EC%9D%98-%EA%B8%B0%EB%B3%B8-%EC%82%AC%EC%9A%A9%EC%9E%90%EA%B0%80-root%EA%B0%80-%EC%95%84%EB%8B%88%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4" class="hash-link" aria-label="이미지의 기본 사용자가 root가 아니었습니다에 대한 직접 링크" title="이미지의 기본 사용자가 root가 아니었습니다에 대한 직접 링크" translate="no">​</a></h2>
+<p><code>velero/velero:v1.15.2</code>의 기본 사용자를 확인하면 <code>cnb:cnb</code>가 나옵니다. uid 1002입니다.</p>
+<div class="language-bash codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-bash codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">nerdctl image inspect velero/velero:v1.15.2 | jq -r '.[0].Config.User'</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"># cnb:cnb</span><br></div></code></pre></div></div>
+<p>호스트의 <code>/var/lib/kubelet/pods</code>는 권한이 <code>0750</code>이고 소유자가 <code>root:root</code>입니다. uid 1002로 실행되는 프로세스가 <code>CAP_DAC_OVERRIDE</code> 없이 이 디렉터리를 열려고 하면 거부당합니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="파드-레벨-runasuser를-0으로-둡니다">파드 레벨 runAsUser를 0으로 둡니다<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%ED%8C%8C%EB%93%9C-%EB%A0%88%EB%B2%A8-runasuser%EB%A5%BC-0%EC%9C%BC%EB%A1%9C-%EB%91%A1%EB%8B%88%EB%8B%A4" class="hash-link" aria-label="파드 레벨 runAsUser를 0으로 둡니다에 대한 직접 링크" title="파드 레벨 runAsUser를 0으로 둡니다에 대한 직접 링크" translate="no">​</a></h2>
+<p>컨테이너 레벨 <code>privileged</code>가 아니라 파드 레벨 <code>runAsUser</code>가 필요합니다.</p>
+<div class="language-yaml codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-yaml codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token key atrule">spec</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token key atrule">securityContext</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token key atrule">runAsUser</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">0</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token key atrule">containers</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token key atrule">name</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> node</span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain">agent</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">      </span><span class="token key atrule">securityContext</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token key atrule">privileged</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"> </span><span class="token boolean important" style="color:rgb(255, 88, 116)">false</span><br></div></code></pre></div></div>
+<p>upstream의 <code>velero install --use-node-agent</code>도 같은 조합을 사용합니다. <code>runAsUser: 0</code>이 있으면 containerd 기본 capability 집합에 <code>CAP_DAC_OVERRIDE</code>가 포함되므로 <code>privileged</code>를 켤 이유가 없습니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="몇-달-동안-정상이던-설정이-배포-한-번에-실패했습니다">몇 달 동안 정상이던 설정이 배포 한 번에 실패했습니다<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%EB%AA%87-%EB%8B%AC-%EB%8F%99%EC%95%88-%EC%A0%95%EC%83%81%EC%9D%B4%EB%8D%98-%EC%84%A4%EC%A0%95%EC%9D%B4-%EB%B0%B0%ED%8F%AC-%ED%95%9C-%EB%B2%88%EC%97%90-%EC%8B%A4%ED%8C%A8%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4" class="hash-link" aria-label="몇 달 동안 정상이던 설정이 배포 한 번에 실패했습니다에 대한 직접 링크" title="몇 달 동안 정상이던 설정이 배포 한 번에 실패했습니다에 대한 직접 링크" translate="no">​</a></h2>
+<p>이 매니페스트는 처음부터 틀려 있었습니다. 그런데도 몇 달 동안 백업이 정상으로 동작했습니다. 이미지의 기본 사용자가 중간에 바뀌었고, 파드는 그 뒤로 재생성되지 않아 예전 이미지를 계속 사용하고 있었기 때문입니다.</p>
+<p>CI가 인프라를 배포하면서 파드를 재생성한 순간 새 이미지를 가져왔고, 그때 장애가 드러났습니다. <strong>이미지 태그가 같아도 파드가 재생성될 때 이미지가 함께 교체됩니다.</strong></p>
+<p>감지가 늦은 이유는 따로 있었습니다. velero server 파드는 계속 Running이라 <code>kubectl get pods</code>만 확인해서는 정상으로 보였습니다. 실제로 멈춘 쪽은 DaemonSet이었고, 증상은 백업 오브젝트의 <code>PartiallyFailed</code> 상태에만 남았습니다. 복구까지 25시간이 걸렸습니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="로그를-확인할-때-시간대를-섞지-않습니다">로그를 확인할 때 시간대를 섞지 않습니다<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%EB%A1%9C%EA%B7%B8%EB%A5%BC-%ED%99%95%EC%9D%B8%ED%95%A0-%EB%95%8C-%EC%8B%9C%EA%B0%84%EB%8C%80%EB%A5%BC-%EC%84%9E%EC%A7%80-%EC%95%8A%EC%8A%B5%EB%8B%88%EB%8B%A4" class="hash-link" aria-label="로그를 확인할 때 시간대를 섞지 않습니다에 대한 직접 링크" title="로그를 확인할 때 시간대를 섞지 않습니다에 대한 직접 링크" translate="no">​</a></h2>
+<p><code>kubectl</code>이 출력하는 타임스탬프와 velero 백업 이름은 UTC를 씁니다. <code>journalctl</code>의 <code>--since</code>와 <code>--until</code>은 로컬 시간을 받습니다. 두 값을 섞으면 9시간 어긋난 구간을 확인하게 됩니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고">참고<a href="https://kgenots.com/blog/privileged-non-root-capabilities#%EC%B0%B8%EA%B3%A0" class="hash-link" aria-label="참고에 대한 직접 링크" title="참고에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><a href="https://man7.org/linux/man-pages/man7/capabilities.7.html" target="_blank" rel="noopener noreferrer" class="">capabilities(7) - Linux manual page</a></li>
+<li class=""><a href="https://github.com/moby/moby/issues/45491" target="_blank" rel="noopener noreferrer" class="">moby#45491 Process capabilities cannot be retained when starting a container as non-root</a></li>
+</ul>]]></content:encoded>
+            <category>Reference</category>
+            <category>Kubernetes</category>
+            <category>Ops</category>
+            <category>Linux</category>
+        </item>
         <item>
             <title><![CDATA[나머지 연산 없는 빠른 요일 계산, 곱셈 한 번이면 됩니다]]></title>
             <link>https://kgenots.com/blog/fast-day-of-week</link>
@@ -599,64 +649,6 @@
             <category>Ops</category>
         </item>
         <item>
-            <title><![CDATA[Temporal로 보상(Saga) 트랜잭션 다루기]]></title>
-            <link>https://kgenots.com/blog/temporal-saga-compensation</link>
-            <guid>https://kgenots.com/blog/temporal-saga-compensation</guid>
-            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
-            <description><![CDATA[여러 서비스에 걸친 작업을 하나의 트랜잭션으로 묶을 수 없을 때, 보상(Saga) 패턴과 Temporal 워크플로우로 안전하게 되돌리는 방법을 정리합니다.]]></description>
-            <content:encoded><![CDATA[<p>여러 서비스에 걸친 작업을 하나의 트랜잭션으로 묶을 수 없을 때, 보상(<a class="glossary-term-link" href="https://kgenots.com/glossary#saga">Saga</a>) 패턴과 <a class="glossary-term-link" href="https://kgenots.com/glossary#temporal">Temporal</a> 워크플로우로 안전하게 되돌리는 방법을 정리합니다.</p>
-<p>여러 서비스에 걸친 작업에는 한 번에 되돌릴 공통 롤백이 없습니다. 그래서 단계마다 "되돌리기(보상)"를 짝지어 두고, 실패하면 성공한 단계를 역순으로 취소합니다.</p>
-<p>이 순서를 손으로 추적하는 대신 워크플로우 엔진(Temporal)에 맡길 수 있습니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="분산-트랜잭션이-왜-어려운가">분산 트랜잭션이 왜 어려운가<a href="https://kgenots.com/blog/temporal-saga-compensation#%EB%B6%84%EC%82%B0-%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98%EC%9D%B4-%EC%99%9C-%EC%96%B4%EB%A0%A4%EC%9A%B4%EA%B0%80" class="hash-link" aria-label="분산 트랜잭션이 왜 어려운가에 대한 직접 링크" title="분산 트랜잭션이 왜 어려운가에 대한 직접 링크" translate="no">​</a></h2>
-<p>분산 트랜잭션이 어려운 이유는, 여러 서비스(또는 외부 시스템)에 걸친 작업을 하나의 DB 트랜잭션으로 묶을 수 없기 때문입니다. 한 DB 안의 작업은 <code>COMMIT</code>/<code>ROLLBACK</code>으로 전부 성공 또는 전부 취소가 되지만, 결제 서비스와 재고 서비스가 따로 있으면 그런 공통 롤백이 없습니다.</p>
-<p>예를 들어 "결제 → 재고 차감 → 배송 등록"에서 결제는 됐는데 재고 차감이 실패하면, 이미 나간 결제를 따로 되돌려(환불) 줘야 합니다. 아무도 대신 되돌려 주지 않으니 직접 되돌립니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/temporal-saga-compensation-2.webp" alt="한 DB 트랜잭션과 달리 여러 서비스에 걸친 작업은 공통 롤백이 없어 보상으로 직접 되돌려야 한다"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="saga-패턴이란">Saga 패턴이란<a href="https://kgenots.com/blog/temporal-saga-compensation#saga-%ED%8C%A8%ED%84%B4%EC%9D%B4%EB%9E%80" class="hash-link" aria-label="Saga 패턴이란에 대한 직접 링�크" title="Saga 패턴이란에 대한 직접 링크" translate="no">​</a></h2>
-<p>Saga 패턴은 여러 단계로 이루어진 작업을, 각 단계와 그 단계를 되돌리는 <strong>보상(compensation) 동작</strong>을 짝지어 관리하는 방식입니다. 전체를 한 번에 롤백하는 대신, 성공한 단계만 거꾸로 취소합니다.</p>
-<p>호텔·항공·렌터카를 묶어 예약하는 상황에 비유할 수 있습니다. 렌터카 예약에서 실패하면 이미 잡아 둔 항공과 호텔 예약을 취소해야 합니다. 이 "취소"가 보상 동작입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="보상은-역순으로">보상은 역순으로<a href="https://kgenots.com/blog/temporal-saga-compensation#%EB%B3%B4%EC%83%81%EC%9D%80-%EC%97%AD%EC%88%9C%EC%9C%BC%EB%A1%9C" class="hash-link" aria-label="보상은 역순으로에 대한 직접 링크" title="보상은 역순으로에 대한 직접 링크" translate="no">​</a></h2>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/temporal-saga-compensation.webp" alt="여러 단계 작업 중 실패 시 보상 단계를 역순으로 실행하는 Saga 패턴"></figure>
-<p>보상은 성공한 단계의 역순으로 실행합니다. 마지막에 성공한 단계부터 거꾸로 되돌려야 단계 사이의 의존 관계가 깨지지 않습니다.</p>
-<div class="language-text codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-text codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">정방향:  결제  →  재고 차감  →  배송 등록(실패)</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">보상:    재고 복구  ←  결제 환불        (역순으로 취소)</span><br></div></code></pre></div></div>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="temporal로-구현하기">Temporal로 구현하기<a href="https://kgenots.com/blog/temporal-saga-compensation#temporal%EB%A1%9C-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0" class="hash-link" aria-label="Temporal로 구현하기에 대한 직접 링크" title="Temporal로 구현하기에 대한 직접 링크" translate="no">​</a></h2>
-<p>Temporal에서는 성공한 단계의 보상 동작을 리스트에 쌓아 두고, 실패 시 역순으로 실행합니다.</p>
-<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">from</span><span class="token plain"> temporalio </span><span class="token keyword" style="font-style:italic">import</span><span class="token plain"> workflow</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">@workflow</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">defn</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">class</span><span class="token plain"> </span><span class="token class-name" style="color:rgb(255, 203, 107)">OrderWorkflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">@workflow</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">run</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token keyword" style="font-style:italic">async</span><span class="token plain"> </span><span class="token keyword" style="font-style:italic">def</span><span class="token plain"> </span><span class="token function" style="color:rgb(130, 170, 255)">run</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">self</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">-</span><span class="token operator" style="color:rgb(137, 221, 255)">&gt;</span><span class="token plain"> </span><span class="token boolean" style="color:rgb(255, 88, 116)">None</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        compensations </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token keyword" style="font-style:italic">try</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">charge_payment</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            compensations</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">append</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">refund_payment</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain">        </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 결제의 보상</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">reserve_inventory</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            compensations</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">append</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">release_inventory</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain">     </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 재고의 보상</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">register_shipping</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token keyword" style="font-style:italic">except</span><span class="token plain"> Exception</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 성공한 단계만 역순으로 되돌림</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">for</span><span class="token plain"> compensate </span><span class="token keyword" style="font-style:italic">in</span><span class="token plain"> </span><span class="token builtin" style="color:rgb(130, 170, 255)">reversed</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">compensations</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">                </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">compensate</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">raise</span><br></div></code></pre></div></div>
-<p>한 단계가 성공한 직후에 그 보상을 등록해 두고, 실패하면 쌓인 보상을 역순으로 실행합니다.</p>
-<p>"어디까지 진행됐는지"는 Temporal이 기억하므로, 서버가 중간에 죽어도 멈춘 지점부터 이어집니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정-보상-누락과-멱등성">흔한 함정 (보상 누락과 멱등성)<a href="https://kgenots.com/blog/temporal-saga-compensation#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95-%EB%B3%B4%EC%83%81-%EB%88%84%EB%9D%BD%EA%B3%BC-%EB%A9%B1%EB%93%B1%EC%84%B1" class="hash-link" aria-label="흔한 함정 (보상 누락과 멱등성)에 대한 직접 링크" title="흔한 함정 (보상 누락과 멱등성)에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">보상 단계를 빠뜨림: 정방향만 짜고 보상을 안 만들면, 실패 시 결제만 되고 재고는 안 잡힌 상태가 남습니다. 단계마다 보상을 짝으로 둡니다.</li>
-<li class="">보상에 멱등성이 없음: 재시도 때문에 보상이 두 번 실행될 수 있습니다. <span style="background-color:#ffdce0">"이미 환불됨"이면 또 환불하지 않도록</span> 멱등하게 만듭니다.</li>
-<li class="">보상도 실패할 수 있음: 환불 API가 죽을 수도 있습니다. 보상 활동(activity)에도 재시도 정책을 두고, 끝내 실패하면 사람이 처리하도록 알립니다.</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/temporal-saga-compensation#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>Saga와 2단계 커밋(2PC)은 무엇이 다른가요?</strong>
-<ul>
-<li class="">2PC는 모든 참가자를 잠그고 한 번에 커밋합니다. Saga는 잠그지 않고 단계별로 진행한 뒤, 실패 시 보상으로 되돌립니다. 서비스가 분리된 환경에서는 보통 Saga가 현실적입니다.</li>
-</ul>
-</li>
-<li class=""><strong>꼭 Temporal이어야 하나요?</strong>
-<ul>
-<li class="">아니요. 메시지 큐로도 Saga를 구현할 수 있습니다. 다만 "어디까지 진행됐나"와 재시도·타임아웃을 직접 관리해야 합니다. Temporal은 그 상태 관리를 대신 해 줍니다.</li>
-</ul>
-</li>
-<li class=""><strong>보상 중에 또 실패하면요?</strong>
-<ul>
-<li class="">보상도 재시도 대상입니다. 자동 재시도로도 안 되면 알림을 띄워 수동 개입으로 넘깁니다.</li>
-</ul>
-</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/temporal-saga-compensation#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">Temporal Docs: Workflows / Activities / Saga</li>
-<li class="">Microservices.io: Saga pattern</li>
-</ul>]]></content:encoded>
-            <category>Reference</category>
-            <category>Backend</category>
-            <category>Temporal</category>
-        </item>
-        <item>
             <title><![CDATA[TSID vs UUID, 정렬 가능한 ID 만들기]]></title>
             <link>https://kgenots.com/blog/tsid-vs-uuid</link>
             <guid>https://kgenots.com/blog/tsid-vs-uuid</guid>
@@ -714,6 +706,64 @@
             <category>Reference</category>
             <category>Backend</category>
             <category>DB</category>
+        </item>
+        <item>
+            <title><![CDATA[Temporal로 보상(Saga) 트랜잭션 다루기]]></title>
+            <link>https://kgenots.com/blog/temporal-saga-compensation</link>
+            <guid>https://kgenots.com/blog/temporal-saga-compensation</guid>
+            <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[여러 서비스에 걸친 작업을 하나의 트랜잭션으로 묶을 수 없을 때, 보상(Saga) 패턴과 Temporal 워크플로우로 안전하게 되돌리는 방법을 정리합니다.]]></description>
+            <content:encoded><![CDATA[<p>여러 서비스에 걸친 작업을 하나의 트랜잭션으로 묶을 수 없을 때, 보상(<a class="glossary-term-link" href="https://kgenots.com/glossary#saga">Saga</a>) 패턴과 <a class="glossary-term-link" href="https://kgenots.com/glossary#temporal">Temporal</a> 워크플로우로 안전하게 되돌리는 방법을 정리합니다.</p>
+<p>여러 서비스에 걸친 작업에는 한 번에 되돌릴 공통 롤백이 없습니다. 그래서 단계마다 "되돌리기(보상)"를 짝지어 두고, 실패하면 성공한 단계를 역순으로 취소합니다.</p>
+<p>이 순서를 손으로 추적하는 대신 워크플로우 엔진(Temporal)에 맡길 수 있습니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="분산-트랜잭션이-왜-어려운가">분산 트랜잭션이 왜 어려운가<a href="https://kgenots.com/blog/temporal-saga-compensation#%EB%B6%84%EC%82%B0-%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98%EC%9D%B4-%EC%99%9C-%EC%96%B4%EB%A0%A4%EC%9A%B4%EA%B0%80" class="hash-link" aria-label="분산 트랜잭션이 왜 어려운가에 대한 직접 링크" title="분산 트랜잭션이 왜 어려운가에 대한 직접 링크" translate="no">​</a></h2>
+<p>분산 트랜잭션이 어려운 이유는, 여러 서비스(또는 외부 시스템)에 걸친 작업을 하나의 DB 트랜잭션으로 묶을 수 없기 때문입니다. 한 DB 안의 작업은 <code>COMMIT</code>/<code>ROLLBACK</code>으로 전부 성공 또는 전부 취소가 되지만, 결제 서비스와 재고 서비스가 따로 있으면 그런 공통 롤백이 없습니다.</p>
+<p>예를 들어 "결제 → 재고 차감 → 배송 등록"에서 결제는 됐는데 재고 차감이 실패하면, 이미 나간 결제를 따로 되돌려(환불) 줘야 합니다. 아무도 대신 되돌려 주지 않으니 직접 되돌립니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/temporal-saga-compensation-2.webp" alt="한 DB 트랜잭션과 달리 여러 서비스에 걸친 작업은 공통 롤백이 없어 보상으로 직접 되돌려야 한다"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="saga-패턴이란">Saga 패턴이란<a href="https://kgenots.com/blog/temporal-saga-compensation#saga-%ED%8C%A8%ED%84%B4%EC%9D%B4%EB%9E%80" class="hash-link" aria-label="Saga 패턴이란에 대한 직접 링�크" title="Saga 패턴이란에 대한 직접 링크" translate="no">​</a></h2>
+<p>Saga 패턴은 여러 단계로 이루어진 작업을, 각 단계와 그 단계를 되돌리는 <strong>보상(compensation) 동작</strong>을 짝지어 관리하는 방식입니다. 전체를 한 번에 롤백하는 대신, 성공한 단계만 거꾸로 취소합니다.</p>
+<p>호텔·항공·렌터카를 묶어 예약하는 상황에 비유할 수 있습니다. 렌터카 예약에서 실패하면 이미 잡아 둔 항공과 호텔 예약을 취소해야 합니다. 이 "취소"가 보상 동작입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="보상은-역순으로">보상은 역순으로<a href="https://kgenots.com/blog/temporal-saga-compensation#%EB%B3%B4%EC%83%81%EC%9D%80-%EC%97%AD%EC%88%9C%EC%9C%BC%EB%A1%9C" class="hash-link" aria-label="보상은 역순으로에 대한 직접 링크" title="보상은 역순으로에 대한 직접 링크" translate="no">​</a></h2>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/temporal-saga-compensation.webp" alt="여러 단계 작업 중 실패 시 보상 단계를 역순으로 실행하는 Saga 패턴"></figure>
+<p>보상은 성공한 단계의 역순으로 실행합니다. 마지막에 성공한 단계부터 거꾸로 되돌려야 단계 사이의 의존 관계가 깨지지 않습니다.</p>
+<div class="language-text codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-text codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">정방향:  결제  →  재고 차감  →  배송 등록(실패)</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">보상:    재고 복구  ←  결제 환불        (역순으로 취소)</span><br></div></code></pre></div></div>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="temporal로-구현하기">Temporal로 구현하기<a href="https://kgenots.com/blog/temporal-saga-compensation#temporal%EB%A1%9C-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0" class="hash-link" aria-label="Temporal로 구현하기에 대한 직접 링크" title="Temporal로 구현하기에 대한 직접 링크" translate="no">​</a></h2>
+<p>Temporal에서는 성공한 단계의 보상 동작을 리스트에 쌓아 두고, 실패 시 역순으로 실행합니다.</p>
+<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">from</span><span class="token plain"> temporalio </span><span class="token keyword" style="font-style:italic">import</span><span class="token plain"> workflow</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">@workflow</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">defn</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">class</span><span class="token plain"> </span><span class="token class-name" style="color:rgb(255, 203, 107)">OrderWorkflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">@workflow</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token decorator annotation punctuation" style="color:rgb(199, 146, 234)">run</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token keyword" style="font-style:italic">async</span><span class="token plain"> </span><span class="token keyword" style="font-style:italic">def</span><span class="token plain"> </span><span class="token function" style="color:rgb(130, 170, 255)">run</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">self</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">-</span><span class="token operator" style="color:rgb(137, 221, 255)">&gt;</span><span class="token plain"> </span><span class="token boolean" style="color:rgb(255, 88, 116)">None</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        compensations </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token keyword" style="font-style:italic">try</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">charge_payment</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            compensations</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">append</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">refund_payment</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain">        </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 결제의 보상</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">reserve_inventory</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            compensations</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">append</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">release_inventory</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain">     </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 재고의 보상</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">register_shipping</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        </span><span class="token keyword" style="font-style:italic">except</span><span class="token plain"> Exception</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 성공한 단계만 역순으로 되돌림</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">for</span><span class="token plain"> compensate </span><span class="token keyword" style="font-style:italic">in</span><span class="token plain"> </span><span class="token builtin" style="color:rgb(130, 170, 255)">reversed</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">compensations</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">                </span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> workflow</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">execute_activity</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">compensate</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> order</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">            </span><span class="token keyword" style="font-style:italic">raise</span><br></div></code></pre></div></div>
+<p>한 단계가 성공한 직후에 그 보상을 등록해 두고, 실패하면 쌓인 보상을 역순으로 실행합니다.</p>
+<p>"어디까지 진행됐는지"는 Temporal이 기억하므로, 서버가 중간에 죽어도 멈춘 지점부터 이어집니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="흔한-함정-보상-누락과-멱등성">흔한 함정 (보상 누락과 멱등성)<a href="https://kgenots.com/blog/temporal-saga-compensation#%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95-%EB%B3%B4%EC%83%81-%EB%88%84%EB%9D%BD%EA%B3%BC-%EB%A9%B1%EB%93%B1%EC%84%B1" class="hash-link" aria-label="흔한 함정 (보상 누락과 멱등성)에 대한 직접 링크" title="흔한 함정 (보상 누락과 멱등성)에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">보상 단계를 빠뜨림: 정방향만 짜고 보상을 안 만들면, 실패 시 결제만 되고 재고는 안 잡힌 상태가 남습니다. 단계마다 보상을 짝으로 둡니다.</li>
+<li class="">보상에 멱등성이 없음: 재시도 때문에 보상이 두 번 실행될 수 있습니다. <span style="background-color:#ffdce0">"이미 환불됨"이면 또 환불하지 않도록</span> 멱등하게 만듭니다.</li>
+<li class="">보상도 실패할 수 있음: 환불 API가 죽을 수도 있습니다. 보상 활동(activity)에도 재시도 정책을 두고, 끝내 실패하면 사람이 처리하도록 알립니다.</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/temporal-saga-compensation#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>Saga와 2단계 커밋(2PC)은 무엇이 다른가요?</strong>
+<ul>
+<li class="">2PC는 모든 참가자를 잠그고 한 번에 커밋합니다. Saga는 잠그지 않고 단계별로 진행한 뒤, 실패 시 보상으로 되돌립니다. 서비스가 분리된 환경에서는 보통 Saga가 현실적입니다.</li>
+</ul>
+</li>
+<li class=""><strong>꼭 Temporal이어야 하나요?</strong>
+<ul>
+<li class="">아니요. 메시지 큐로도 Saga를 구현할 수 있습니다. 다만 "어디까지 진행됐나"와 재시도·타임아웃을 직접 관리해야 합니다. Temporal은 그 상태 관리를 대신 해 줍니다.</li>
+</ul>
+</li>
+<li class=""><strong>보상 중에 또 실패하면요?</strong>
+<ul>
+<li class="">보상도 재시도 대상입니다. 자동 재시도로도 안 되면 알림을 띄워 수동 개입으로 넘깁니다.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/temporal-saga-compensation#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">Temporal Docs: Workflows / Activities / Saga</li>
+<li class="">Microservices.io: Saga pattern</li>
+</ul>]]></content:encoded>
+            <category>Reference</category>
+            <category>Backend</category>
+            <category>Temporal</category>
         </item>
         <item>
             <title><![CDATA[6개월을 돌아보며, 다시 시작한다면]]></title>
@@ -1175,80 +1225,6 @@
             <category>Retrospective</category>
             <category>Architecture</category>
             <category>BuildLog</category>
-        </item>
-        <item>
-            <title><![CDATA[왜 지금, Python을 알아야 할까?]]></title>
-            <link>https://kgenots.com/blog/why-learn-python-now</link>
-            <guid>https://kgenots.com/blog/why-learn-python-now</guid>
-            <pubDate>Thu, 03 Jul 2025 00:00:00 GMT</pubDate>
-            <description><![CDATA[AI, 데이터, 자동화, 그리고 새로운 직군들이 생겨나고 있습니다.]]></description>
-            <content:encoded><![CDATA[<p>AI, 데이터, 자동화, 그리고 새로운 직군들이 생겨나고 있습니다.<br>
-<!-- -->‘MLOps 엔지니어’, ‘AI 리서처’, ‘데이터 퍼블리셔’…<br>
-<!-- -->이런 변화 속에서 개발자는 어떤 기술을 배우고, 어떤 도구를 익혀야 할까요?</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/why-learn-python-now.webp" alt="why-learn-python-now"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="-익숙한-기술-낯선-시대">🧭 익숙한 기술, 낯선 시대<a href="https://kgenots.com/blog/why-learn-python-now#-%EC%9D%B5%EC%88%99%ED%95%9C-%EA%B8%B0%EC%88%A0-%EB%82%AF%EC%84%A0-%EC%8B%9C%EB%8C%80" class="hash-link" aria-label="🧭 익숙한 기술, 낯선 시대에 대한 직접 링크" title="🧭 익숙한 기술, 낯선 시대에 대한 직접 링크" translate="no">​</a></h2>
-<p>한동안 국내 개발 환경, 특히 공공 프로젝트에서는 <strong>Java 기반의 Spring Boot</strong>가 표준처럼 사용됐습니다.</p>
-<ul>
-<li class="">Spring + MyBatis 조합</li>
-<li class="">JSP, DAO, Service 계층으로 나뉜 구조</li>
-<li class="">XML 설정과 정형화된 패턴</li>
-<li class="">공공기관 중심의 안정적 구조</li>
-</ul>
-<blockquote>
-<p>"그럼 지금도 Java만으로 충분할까?"</p>
-</blockquote>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="-새로운-직군은-python을-쓴다">🤖 새로운 직군은 Python을 쓴다<a href="https://kgenots.com/blog/why-learn-python-now#-%EC%83%88%EB%A1%9C%EC%9A%B4-%EC%A7%81%EA%B5%B0%EC%9D%80-python%EC%9D%84-%EC%93%B4%EB%8B%A4" class="hash-link" aria-label="🤖 새로운 직군은 Python을 쓴다에 대한 직접 링크" title="🤖 새로운 직군은 Python을 쓴다에 대한 직접 링크" translate="no">​</a></h2>
-<p>AI 개발, 데이터 분석, 자동화, 시스템 운영…
-이 모든 영역에서 중심에 있는 언어는 <strong>Python</strong>입니다.</p>
-<ul>
-<li class="">ChatGPT, HuggingFace, Llama 같은 LLM → 모두 Python 기반</li>
-<li class="">FastAPI, Django → 빠른 백엔드 개발 가능</li>
-<li class="">Pandas, Jupyter → 분석과 보고 자동화</li>
-<li class="">Airflow, Schedule → 업무 흐름 자동화</li>
-<li class="">Markdown + Python → 문서화 및 퍼블리싱</li>
-</ul>
-<p>Python은 단순히 "배워두면 좋은 언어"가 아닙니다.<br>
-<strong>지금의 기술 생태계에서 가장 자주 쓰이고, 실제로 쓰이는 언어</strong>입니다.</p>
-<hr>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="️-java와-python-함께-써봐야-보인다">⚙️ Java와 Python, 함께 써봐야 보인다<a href="https://kgenots.com/blog/why-learn-python-now#%EF%B8%8F-java%EC%99%80-python-%ED%95%A8%EA%BB%98-%EC%8D%A8%EB%B4%90%EC%95%BC-%EB%B3%B4%EC%9D%B8%EB%8B%A4" class="hash-link" aria-label="⚙️ Java와 Python, 함께 써봐야 보인다에 대한 직접 링크" title="⚙️ Java와 Python, 함께 써봐야 보인다에 대한 직접 링크" translate="no">​</a></h2>
-<p>Java만 써본 개발자라면, 이런 의문이 들 수 있습니다.</p>
-<blockquote>
-<p>“Java로도 다 되지 않나?”</p>
-</blockquote>
-<p>맞습니다. Java는 여전히 유효하고, 특히 대규모 백엔드 시스템에 강합니다.<br>
-<!-- -->하지만 <strong>생산성, 간결함, 자동화, 빠른 피드백 루프</strong>는 Python이 훨씬 유리합니다.</p>
-<table><thead><tr><th>항목</th><th>Java (전자정부프레임워크)</th><th>Python</th></tr></thead><tbody><tr><td>생산성</td><td>설정 많고 구조 복잡</td><td>빠른 개발, 간결한 코드</td></tr><tr><td>AI/데이터 연계</td><td>약함</td><td>강력한 생태계</td></tr><tr><td>자동화/Ops</td><td>무거움</td><td>경량화, 스크립트 친화</td></tr><tr><td>진입장벽</td><td>높음 (JVM, 빌드 도구 등)</td><td>낮음 (간단한 문법)</td></tr><tr><td>퍼블리싱</td><td>JSP, JavaDoc 등 전통적</td><td>Markdown, Jupyter 등 유연함</td></tr></tbody></table>
-<hr>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="-히스토리를-아는-python-개발자">🧠 히스토리를 아는 Python 개발자<a href="https://kgenots.com/blog/why-learn-python-now#-%ED%9E%88%EC%8A%A4%ED%86%A0%EB%A6%AC%EB%A5%BC-%EC%95%84%EB%8A%94-python-%EA%B0%9C%EB%B0%9C%EC%9E%90" class="hash-link" aria-label="🧠 히스토리를 아는 Python 개발자에 대한 직접 링크" title="🧠 히스토리를 아는 Python 개발자에 대한 직접 링크" translate="no">​</a></h2>
-<p>여기서 중요한 건 <strong>Java를 버리자는 게 아니라</strong>,<br>
-<strong>Java 기반 시스템을 이해하는 사람이 Python까지 익히면 무기가 된다는 것</strong>입니다.</p>
-<p>전자정부프레임워크로 구성된 시스템을 유지·보수하면서도:</p>
-<ul>
-<li class="">로그 수집 및 리포팅은 Python으로</li>
-<li class="">배치/자동화 스크립트는 Python으로</li>
-<li class="">AI 연동 기능은 Python으로</li>
-<li class="">운영 리포트 자동 생성은 Python + Markdown</li>
-</ul>
-<blockquote>
-<p>히스토리를 알고 있는 사람이,<br>
-<!-- -->새로운 도구로 미래까지 설계할 수 있습니다.</p>
-</blockquote>
-<hr>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="-python은-선택이-아니라-기본-도구">💡 Python은 선택이 아니라, 기본 도구<a href="https://kgenots.com/blog/why-learn-python-now#-python%EC%9D%80-%EC%84%A0%ED%83%9D%EC%9D%B4-%EC%95%84%EB%8B%88%EB%9D%BC-%EA%B8%B0%EB%B3%B8-%EB%8F%84%EA%B5%AC" class="hash-link" aria-label="💡 Python은 선택이 아니라, 기본 도구에 대한 직접 링크" title="💡 Python은 선택이 아니라, 기본 도구에 대한 직접 링크" translate="no">​</a></h2>
-<p>개발자로서 시스템을 지키는 일도 중요하지만,<br>
-<!-- -->이제는 그 위에 데이터를 연결하고, 자동화하고,<br>
-<!-- -->콘텐츠로 정리해 <strong>전달할 수 있는 역량</strong>까지 요구됩니다.</p>
-<p>그 모든 역할을 유연하게 소화할 수 있는 도구가 바로 Python입니다.</p>
-<hr>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="️-마무리하며">☕️ 마무리하며<a href="https://kgenots.com/blog/why-learn-python-now#%EF%B8%8F-%EB%A7%88%EB%AC%B4%EB%A6%AC%ED%95%98%EB%A9%B0" class="hash-link" aria-label="☕️ 마무리하며에 대한 직접 링크" title="☕️ 마무리하며에 대한 직접 링크" translate="no">​</a></h2>
-<p>지금 개발자에게 필요한 건 "이 언어가 더 좋다"는 논쟁이 아닙니다.<br>
-<strong>기술이 바뀌는 이유와 방향을 이해하고, 거기에 적응할 수 있는 준비</strong>입니다.</p>
-<p>Java를 잘 아는 개발자라면,
-Python은 어렵지 않습니다.<br>
-<!-- -->오히려 <strong>더 빨리, 더 강하게 성장할 수 있는 길</strong>이 될 수도 있습니다.</p>
-<p>저랑 함께하고 싶다면 <a href="mailto:kgenots@gmail.com" target="_blank" rel="noopener noreferrer" class="">kgenots@gmail.com</a> 로 연락주세요 <!-- -->:D</p>]]></content:encoded>
-            <category>Tech</category>
-            <category>Python</category>
         </item>
     </channel>
 </rss>
