@@ -315,10 +315,10 @@
     "wordCount": 420
   },
   {
-    "title": "2025년 상반기, 내가 한 일들 정리 (초안)",
+    "title": "2025년 상반기에 한 일 정리",
     "slug": "2025-h1-review",
     "image": "/assets/blog/retrospective-2025-1h.webp",
-    "summary": "2025년 상반기엔 정신없이 달리는 대신, 왜 달리고 있는가를 더 많이 고민했던 것 같다.  \n기술팀 리더로서의 역할도 조금씩 달라졌고, 나 스스로도 방향을 재정비하는 시기였다.",
+    "summary": "2025년 상반기는 왜 달리고 있는지를 더 많이 고민한 시기였습니다. 기술팀 리더로서 맡는 일이 달라졌고, 방향을 다시 잡아야 했습니다.",
     "link": "/blog/2025-h1-review",
     "tags": [
       "Tech",
@@ -326,8 +326,8 @@
       "성장기록"
     ],
     "date": "2025-06-03",
-    "readingTime": 1,
-    "wordCount": 191
+    "readingTime": 2,
+    "wordCount": 248
   },
   {
     "title": "Amazon Linux 2023 Docker Compose 설치",
