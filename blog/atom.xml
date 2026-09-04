@@ -409,73 +409,6 @@
         <category label="Ops" term="Ops"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[NATS JetStream 스트림 보관 정책 이해하기]]></title>
-        <id>https://kgenots.com/blog/nats-jetstream-retention</id>
-        <link href="https://kgenots.com/blog/nats-jetstream-retention"/>
-        <updated>2026-06-19T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[NATS JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.]]></summary>
-        <content type="html"><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#nats">NATS</a> JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.</p>
-<p>스트림 보관 기간(<code>max_age</code>)은 소비자가 메시지를 가져가는 주기보다 넉넉히 길게 잡습니다. 이 값이 짧으면 소비자가 오기 전에 메시지가 만료되어 사라집니다.</p>
-<p>분명히 발행했는데 소비 쪽에는 아무것도 도착하지 않는 사고가 대개 여기서 납니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="jetstream-스트림과-보관-정책이란">JetStream 스트림과 보관 정책이란<a href="https://kgenots.com/blog/nats-jetstream-retention#jetstream-%EC%8A%A4%ED%8A%B8%EB%A6%BC%EA%B3%BC-%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85%EC%9D%B4%EB%9E%80" class="hash-link" aria-label="JetStream 스트림과 보관 정책이란에 대한 직접 링크" title="JetStream 스트림과 보관 정책이란에 대한 직접 링크" translate="no">​</a></h2>
-<p>JetStream 스트림은 NATS가 메시지를 디스크에 저장해 두는 저장소입니다. 일반 NATS는 메시지를 흘려보내고 끝이지만, JetStream은 스트림에 쌓아 두고 소비자가 나중에 가져갈 수 있게 합니다.</p>
-<p>보관 정책(retention policy)은 이렇게 쌓인 메시지를 언제 지울지 정하는 규칙입니다. 모든 메시지를 영원히 둘 수는 없으니 스트림마다 지우는 기준이 필요합니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="보관-정책-세-가지">보관 정책 세 가지<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85-%EC%84%B8-%EA%B0%80%EC%A7%80" class="hash-link" aria-label="보관 정책 세 가지에 대한 직접 링크" title="보관 정책 세 가지에 대한 직접 링크" translate="no">​</a></h2>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention.webp" alt="NATS JetStream 보관 정책 세 가지와 메시지가 지워지는 조건"></figure>
-<p>NATS JetStream의 보관 정책은 세 가지입니다.</p>
-<table><thead><tr><th>정책</th><th>메시지를 지우는 시점</th><th>쓰는 곳</th></tr></thead><tbody><tr><td>Limits (기본)</td><td>한도(개수·용량·기간)에 도달하면 오래된 것부터</td><td>여러 소비자가 같은 메시지를 각자 읽는 경우</td></tr><tr><td>Interest</td><td>관심 있는 모든 소비자가 ack하면</td><td>구독자 모두 처리한 뒤 비워도 될 때</td></tr><tr><td>WorkQueue</td><td>소비자 하나가 ack하면 즉시</td><td>작업 큐(한 메시지를 한 번만 처리)</td></tr></tbody></table>
-<p>대부분은 Limits를 씁니다. 그래서 한도를 어떻게 잡느냐가 문제가 됩니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="메시지는-언제-지워지나-limits-정책">메시지는 언제 지워지나 (Limits 정책)<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%A9%94%EC%8B%9C%EC%A7%80%EB%8A%94-%EC%96%B8%EC%A0%9C-%EC%A7%80%EC%9B%8C%EC%A7%80%EB%82%98-limits-%EC%A0%95%EC%B1%85" class="hash-link" aria-label="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" title="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" translate="no">​</a></h2>
-<p>Limits 정책에서는 다음 세 한도 중 하나라도 넘으면 오래된 메시지부터 지워집니다.</p>
-<ul>
-<li class=""><code>max_msgs</code>: 최대 메시지 개수</li>
-<li class=""><code>max_bytes</code>: 최대 용량</li>
-<li class=""><code>max_age</code>: 최대 보관 기간(메시지의 수명)</li>
-</ul>
-<p>이 셋 중 사고가 가장 잦은 값이 <code>max_age</code>입니다. 개수와 용량은 스트림이 커질 때 걸리지만, 기간은 메시지가 몇 건이든 그냥 지나갑니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention-2.webp" alt="max_age가 소비 주기보다 짧으면 소비 전에 삭제되고, 길면 소비 후 만료되어 안전하다"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="스트림-설정-방법">스트림 설정 방법<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%8A%A4%ED%8A%B8%EB%A6%BC-%EC%84%A4%EC%A0%95-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="스트림 설정 방법에 대한 직접 링크" title="스트림 설정 방법에 대한 직접 링크" translate="no">​</a></h2>
-<p>스트림을 만들 때 <code>StreamConfig</code>에 정책과 한도를 지정합니다.</p>
-<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">from</span><span class="token plain"> nats</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">api </span><span class="token keyword" style="font-style:italic">import</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> RetentionPolicy</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">config </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    name</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token string" style="color:rgb(195, 232, 141)">"MY_STREAM"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    subjects</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token string" style="color:rgb(195, 232, 141)">"my-service.&gt;"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    retention</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain">RetentionPolicy</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">LIMITS</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">   </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 기본</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    max_age</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token number" style="color:rgb(247, 140, 108)">14</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">24</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">          </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 14일 (초 단위), 소비 주기보다 길게</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># max_msgs, max_bytes 도 함께 둘 수 있음</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">add_stream</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">config</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><br></div></code></pre></div></div>
-<p><code>max_age</code>는 소비자가 메시지를 가져가는 주기보다 넉넉히 잡습니다. 하루 한 번 모아 가는 소비자가 있다면, 하루로 잡지 말고 며칠 이상 두는 식입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="max_age-설정에서-흔한-함정">max_age 설정에서 흔한 함정<a href="https://kgenots.com/blog/nats-jetstream-retention#max_age-%EC%84%A4%EC%A0%95%EC%97%90%EC%84%9C-%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="max_age 설정에서 흔한 함정에 대한 직접 링크" title="max_age 설정에서 흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><code>max_age</code>를 소비 주기보다 짧게 두기: <span style="background-color:#ffdce0">소비 전에 메시지가 삭제됩니다.</span> 발행도 삭제도 정상 동작이라 오류 로그가 남지 않고, 그래서 찾기 어렵습니다. (이 사고를 직접 겪은 이야기는 <a class="" href="https://kgenots.com/blog/event-bus-nats-temporal">회고 글</a>에 적었습니다.)</li>
-<li class="">CLI로 임시 변경: <code>nats stream edit</code>로 바꿔도, 서비스가 코드의 <code>StreamConfig</code>로 스트림을 다시 갱신하면 코드값으로 되돌아갑니다. 영구히 바꾸려면 코드를 고칩니다.</li>
-<li class="">스트림마다 제각각인 보관 기간: 팀에서 1d/7d/30d를 임의로 섞으면 실수가 납니다. 공통 상수 하나로 고정하는 편이 안전합니다.</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/nats-jetstream-retention#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>max_age와 소비자(consumer)의 ack는 무슨 관계인가요?</strong>
-<ul>
-<li class="">Limits 정책에서는 무관합니다. 소비자가 ack하지 않아도 <code>max_age</code>가 지나면 지워집니다. ack 기반으로 지우려면 Interest나 WorkQueue 정책을 씁니다.</li>
-</ul>
-</li>
-<li class=""><strong>메시지를 잃지 않으려면 어떻게 하나요?</strong>
-<ul>
-<li class="">소비 주기보다 <code>max_age</code>를 길게 두고, 처리 실패분은 별도 DLQ(데드레터) 스트림으로 보냅니다. DLQ는 보통 보관 한도를 두지 않습니다.</li>
-</ul>
-</li>
-<li class=""><strong>한도를 여러 개 동시에 걸 수 있나요?</strong>
-<ul>
-<li class="">네. <code>max_msgs</code>, <code>max_bytes</code>, <code>max_age</code>를 함께 두면 가장 먼저 도달한 한도가 적용됩니다.</li>
-</ul>
-</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">NATS Docs: JetStream Streams / Retention Policies</li>
-<li class="">NATS Docs: <code>nats stream add</code> / <code>StreamConfig</code></li>
-</ul>]]></content>
-        <author>
-            <name>KGENOTS</name>
-            <uri>https://github.com/kgenots</uri>
-        </author>
-        <category label="Reference" term="Reference"/>
-        <category label="Backend" term="Backend"/>
-        <category label="NATS" term="NATS"/>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[OAuth 토큰, 어디에 저장할까 (쿠키 vs localStorage)]]></title>
         <id>https://kgenots.com/blog/oauth-bff-token-storage</id>
         <link href="https://kgenots.com/blog/oauth-bff-token-storage"/>
@@ -552,6 +485,73 @@
         <category label="Auth" term="Auth"/>
         <category label="Frontend" term="Frontend"/>
         <category label="Security" term="Security"/>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[NATS JetStream 스트림 보관 정책 이해하기]]></title>
+        <id>https://kgenots.com/blog/nats-jetstream-retention</id>
+        <link href="https://kgenots.com/blog/nats-jetstream-retention"/>
+        <updated>2026-06-19T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[NATS JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.]]></summary>
+        <content type="html"><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#nats">NATS</a> JetStream 스트림이 메시지를 언제까지 보관하고 언제 지우는지, 그리고 보관 기간을 잘못 잡으면 어떤 일이 생기는지 정리합니다.</p>
+<p>스트림 보관 기간(<code>max_age</code>)은 소비자가 메시지를 가져가는 주기보다 넉넉히 길게 잡습니다. 이 값이 짧으면 소비자가 오기 전에 메시지가 만료되어 사라집니다.</p>
+<p>분명히 발행했는데 소비 쪽에는 아무것도 도착하지 않는 사고가 대개 여기서 납니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="jetstream-스트림과-보관-정책이란">JetStream 스트림과 보관 정책이란<a href="https://kgenots.com/blog/nats-jetstream-retention#jetstream-%EC%8A%A4%ED%8A%B8%EB%A6%BC%EA%B3%BC-%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85%EC%9D%B4%EB%9E%80" class="hash-link" aria-label="JetStream 스트림과 보관 정책이란에 대한 직접 링크" title="JetStream 스트림과 보관 정책이란에 대한 직접 링크" translate="no">​</a></h2>
+<p>JetStream 스트림은 NATS가 메시지를 디스크에 저장해 두는 저장소입니다. 일반 NATS는 메시지를 흘려보내고 끝이지만, JetStream은 스트림에 쌓아 두고 소비자가 나중에 가져갈 수 있게 합니다.</p>
+<p>보관 정책(retention policy)은 이렇게 쌓인 메시지를 언제 지울지 정하는 규칙입니다. 모든 메시지를 영원히 둘 수는 없으니 스트림마다 지우는 기준이 필요합니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="보관-정책-세-가지">보관 정책 세 가지<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%B3%B4%EA%B4%80-%EC%A0%95%EC%B1%85-%EC%84%B8-%EA%B0%80%EC%A7%80" class="hash-link" aria-label="보관 정책 세 가지에 대한 직접 링크" title="보관 정책 세 가지에 대한 직접 링크" translate="no">​</a></h2>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention.webp" alt="NATS JetStream 보관 정책 세 가지와 메시지가 지워지는 조건"></figure>
+<p>NATS JetStream의 보관 정책은 세 가지입니다.</p>
+<table><thead><tr><th>정책</th><th>메시지를 지우는 시점</th><th>쓰는 곳</th></tr></thead><tbody><tr><td>Limits (기본)</td><td>한도(개수·용량·기간)에 도달하면 오래된 것부터</td><td>여러 소비자가 같은 메시지를 각자 읽는 경우</td></tr><tr><td>Interest</td><td>관심 있는 모든 소비자가 ack하면</td><td>구독자 모두 처리한 뒤 비워도 될 때</td></tr><tr><td>WorkQueue</td><td>소비자 하나가 ack하면 즉시</td><td>작업 큐(한 메시지를 한 번만 처리)</td></tr></tbody></table>
+<p>대부분은 Limits를 씁니다. 그래서 한도를 어떻게 잡느냐가 문제가 됩니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="메시지는-언제-지워지나-limits-정책">메시지는 언제 지워지나 (Limits 정책)<a href="https://kgenots.com/blog/nats-jetstream-retention#%EB%A9%94%EC%8B%9C%EC%A7%80%EB%8A%94-%EC%96%B8%EC%A0%9C-%EC%A7%80%EC%9B%8C%EC%A7%80%EB%82%98-limits-%EC%A0%95%EC%B1%85" class="hash-link" aria-label="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" title="메시지는 언제 지워지나 (Limits 정책)에 대한 직접 링크" translate="no">​</a></h2>
+<p>Limits 정책에서는 다음 세 한도 중 하나라도 넘으면 오래된 메시지부터 지워집니다.</p>
+<ul>
+<li class=""><code>max_msgs</code>: 최대 메시지 개수</li>
+<li class=""><code>max_bytes</code>: 최대 용량</li>
+<li class=""><code>max_age</code>: 최대 보관 기간(메시지의 수명)</li>
+</ul>
+<p>이 셋 중 사고가 가장 잦은 값이 <code>max_age</code>입니다. 개수와 용량은 스트림이 커질 때 걸리지만, 기간은 메시지가 몇 건이든 그냥 지나갑니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/nats-jetstream-retention-2.webp" alt="max_age가 소비 주기보다 짧으면 소비 전에 삭제되고, 길면 소비 후 만료되어 안전하다"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="스트림-설정-방법">스트림 설정 방법<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%8A%A4%ED%8A%B8%EB%A6%BC-%EC%84%A4%EC%A0%95-%EB%B0%A9%EB%B2%95" class="hash-link" aria-label="스트림 설정 방법에 대한 직접 링크" title="스트림 설정 방법에 대한 직접 링크" translate="no">​</a></h2>
+<p>스트림을 만들 때 <code>StreamConfig</code>에 정책과 한도를 지정합니다.</p>
+<div class="language-python codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-python codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token keyword" style="font-style:italic">from</span><span class="token plain"> nats</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">api </span><span class="token keyword" style="font-style:italic">import</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"> RetentionPolicy</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">config </span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain"> StreamConfig</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    name</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token string" style="color:rgb(195, 232, 141)">"MY_STREAM"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    subjects</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token punctuation" style="color:rgb(199, 146, 234)">[</span><span class="token string" style="color:rgb(195, 232, 141)">"my-service.&gt;"</span><span class="token punctuation" style="color:rgb(199, 146, 234)">]</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    retention</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token plain">RetentionPolicy</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">LIMITS</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">   </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 기본</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    max_age</span><span class="token operator" style="color:rgb(137, 221, 255)">=</span><span class="token number" style="color:rgb(247, 140, 108)">14</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">24</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token plain"> </span><span class="token operator" style="color:rgb(137, 221, 255)">*</span><span class="token plain"> </span><span class="token number" style="color:rgb(247, 140, 108)">60</span><span class="token punctuation" style="color:rgb(199, 146, 234)">,</span><span class="token plain">          </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># 14일 (초 단위), 소비 주기보다 길게</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    </span><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># max_msgs, max_bytes 도 함께 둘 수 있음</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token keyword" style="font-style:italic">await</span><span class="token plain"> js</span><span class="token punctuation" style="color:rgb(199, 146, 234)">.</span><span class="token plain">add_stream</span><span class="token punctuation" style="color:rgb(199, 146, 234)">(</span><span class="token plain">config</span><span class="token punctuation" style="color:rgb(199, 146, 234)">)</span><br></div></code></pre></div></div>
+<p><code>max_age</code>는 소비자가 메시지를 가져가는 주기보다 넉넉히 잡습니다. 하루 한 번 모아 가는 소비자가 있다면, 하루로 잡지 말고 며칠 이상 두는 식입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="max_age-설정에서-흔한-함정">max_age 설정에서 흔한 함정<a href="https://kgenots.com/blog/nats-jetstream-retention#max_age-%EC%84%A4%EC%A0%95%EC%97%90%EC%84%9C-%ED%9D%94%ED%95%9C-%ED%95%A8%EC%A0%95" class="hash-link" aria-label="max_age 설정에서 흔한 함정에 대한 직접 링크" title="max_age 설정에서 흔한 함정에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><code>max_age</code>를 소비 주기보다 짧게 두기: <span style="background-color:#ffdce0">소비 전에 메시지가 삭제됩니다.</span> 발행도 삭제도 정상 동작이라 오류 로그가 남지 않고, 그래서 찾기 어렵습니다. (이 사고를 직접 겪은 이야기는 <a class="" href="https://kgenots.com/blog/event-bus-nats-temporal">회고 글</a>에 적었습니다.)</li>
+<li class="">CLI로 임시 변경: <code>nats stream edit</code>로 바꿔도, 서비스가 코드의 <code>StreamConfig</code>로 스트림을 다시 갱신하면 코드값으로 되돌아갑니다. 영구히 바꾸려면 코드를 고칩니다.</li>
+<li class="">스트림마다 제각각인 보관 기간: 팀에서 1d/7d/30d를 임의로 섞으면 실수가 납니다. 공통 상수 하나로 고정하는 편이 안전합니다.</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/nats-jetstream-retention#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>max_age와 소비자(consumer)의 ack는 무슨 관계인가요?</strong>
+<ul>
+<li class="">Limits 정책에서는 무관합니다. 소비자가 ack하지 않아도 <code>max_age</code>가 지나면 지워집니다. ack 기반으로 지우려면 Interest나 WorkQueue 정책을 씁니다.</li>
+</ul>
+</li>
+<li class=""><strong>메시지를 잃지 않으려면 어떻게 하나요?</strong>
+<ul>
+<li class="">소비 주기보다 <code>max_age</code>를 길게 두고, 처리 실패분은 별도 DLQ(데드레터) 스트림으로 보냅니다. DLQ는 보통 보관 한도를 두지 않습니다.</li>
+</ul>
+</li>
+<li class=""><strong>한도를 여러 개 동시에 걸 수 있나요?</strong>
+<ul>
+<li class="">네. <code>max_msgs</code>, <code>max_bytes</code>, <code>max_age</code>를 함께 두면 가장 먼저 도달한 한도가 적용됩니다.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/nats-jetstream-retention#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">NATS Docs: JetStream Streams / Retention Policies</li>
+<li class="">NATS Docs: <code>nats stream add</code> / <code>StreamConfig</code></li>
+</ul>]]></content>
+        <author>
+            <name>KGENOTS</name>
+            <uri>https://github.com/kgenots</uri>
+        </author>
+        <category label="Reference" term="Reference"/>
+        <category label="Backend" term="Backend"/>
+        <category label="NATS" term="NATS"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[OPA로 API 권한(인가)을 외부화하기]]></title>
