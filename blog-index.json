@@ -42,7 +42,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 523
+    "wordCount": 542
   },
   {
     "title": "S3 Parquet를 DuckDB로 조회하기",
@@ -56,8 +56,8 @@
       "Ops"
     ],
     "date": "2026-06-19",
-    "readingTime": 3,
-    "wordCount": 487
+    "readingTime": 4,
+    "wordCount": 651
   },
   {
     "title": "모노레포 워크스페이스 도구 이해하기 (공유 패키지와 증분 빌드)",
@@ -87,7 +87,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 500
+    "wordCount": 501
   },
   {
     "title": "SPA를 한 번 빌드해 여러 환경에 띄우기 (런타임 설정)",
@@ -102,7 +102,7 @@
     ],
     "date": "2026-06-19",
     "readingTime": 3,
-    "wordCount": 544
+    "wordCount": 554
   },
   {
     "title": "왜 지금, Python을 알아야 할까?",
