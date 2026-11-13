@@ -292,73 +292,6 @@
         <category label="Ops" term="Ops"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[모노레포 워크스페이스 도구 이해하기 (공유 패키지와 증분 빌드)]]></title>
-        <id>https://kgenots.com/blog/monorepo-workspace-tooling</id>
-        <link href="https://kgenots.com/blog/monorepo-workspace-tooling"/>
-        <updated>2026-06-19T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[모노레포에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.]]></summary>
-        <content type="html"><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#monorepo">모노레포</a>에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.</p>
-<p>모노레포 도구는 두 층위로 나뉩니다. 패키지 매니저의 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 바뀐 부분만 다시 빌드(증분 빌드)하고 캐시를 관리합니다.</p>
-<p>둘을 한 덩어리로 보면, 빌드가 느릴 때 어느 쪽을 손봐야 하는지 헷갈립니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="워크스페이스-도구가-하는-일">워크스페이스 도구가 하는 일<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%9B%8C%ED%81%AC%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4-%EB%8F%84%EA%B5%AC%EA%B0%80-%ED%95%98%EB%8A%94-%EC%9D%BC" class="hash-link" aria-label="워크스페이스 도구가 하는 일에 대한 직접 링크" title="워크스페이스 도구가 하는 일에 대한 직접 링크" translate="no">​</a></h2>
-<p>워크스페이스 도구는 한 레포 안의 여러 패키지를 함께 관리하게 해 주는 도구입니다. 공통 코드를 여러 앱이 나눠 쓰게 연결하고, 무엇을 다시 빌드할지 정리해 줍니다.</p>
-<p>요리에 비유하면, 여러 메뉴(앱)가 공용 재료 창고(공유 패키지)를 함께 씁니다. 재료가 바뀌면 그 재료를 쓰는 메뉴만 다시 조리합니다.</p>
-<p>창고를 연결하는 일과 다시 조리할 메뉴를 고르는 일은 서로 다릅니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="두-층위로-나눠-보기">두 층위로 나눠 보기<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%91%90-%EC%B8%B5%EC%9C%84%EB%A1%9C-%EB%82%98%EB%88%A0-%EB%B3%B4%EA%B8%B0" class="hash-link" aria-label="두 층위로 나눠 보기에 대한 직접 링크" title="두 층위로 나눠 보기에 대한 직접 링크" translate="no">​</a></h2>
-<p>도구를 두 층위로 나눠 보면 역할이 분명해집니다.</p>
-<table><thead><tr><th>층위</th><th>역할</th><th>대표 도구</th></tr></thead><tbody><tr><td>패키지 매니저 워크스페이스</td><td>공유 패키지를 연결(의존성)</td><td>pnpm/yarn workspaces, uv, Cargo, Go workspace</td></tr><tr><td>빌드 오케스트레이터</td><td>task 그래프 + 증분 빌드·캐시</td><td>Turborepo, Nx</td></tr></tbody></table>
-<p>둘은 함께 씁니다. 패키지 매니저가 "무엇을 공유하는지"를 알고, 오케스트레이터가 "무엇을 다시 만들지"를 정합니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-2.webp" alt="패키지 매니저 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 증분 빌드와 캐시를 담당하는 두 층위 구분"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="공유-패키지-연결-패키지-매니저">공유 패키지 연결 (패키지 매니저)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EA%B3%B5%EC%9C%A0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EC%97%B0%EA%B2%B0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EB%A7%A4%EB%8B%88%EC%A0%80" class="hash-link" aria-label="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" title="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" translate="no">​</a></h2>
-<p>첫 층위는 공유 패키지를 연결하는 일입니다. 워크스페이스를 선언하면, 한 패키지를 고쳤을 때 그것을 쓰는 앱이 즉시 같은 코드를 봅니다.</p>
-<p>버전을 올려 배포하고 다시 받아오는 왕복이 사라집니다.</p>
-<div class="language-yaml codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-yaml codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># pnpm-workspace.yaml</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token key atrule">packages</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"apps/*"</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"packages/*"</span><br></div></code></pre></div></div>
-<div class="language-json codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-json codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// apps/web/package.json (공유 패키지를 그대로 의존)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"dependencies"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"@acme/ui"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"workspace:*"</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><br></div></code></pre></div></div>
-<p>이 연결이 모노레포의 가장 큰 이점입니다. 공유 코드와 계약이 한 커밋에서 같이 움직입니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="바뀐-것만-빌드-오케스트레이터">바뀐 것만 빌드 (오케스트레이터)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%B0%94%EB%80%90-%EA%B2%83%EB%A7%8C-%EB%B9%8C%EB%93%9C-%EC%98%A4%EC%BC%80%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%9D%B4%ED%84%B0" class="hash-link" aria-label="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" title="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" translate="no">​</a></h2>
-<p>둘째 층위는 바뀐 것만 다시 빌드하는 일입니다. 빌드 오케스트레이터는 패키지 사이의 의존 그래프를 알고 있어서, 바뀐 패키지와 그 영향을 받는 앱만 다시 빌드하고 나머지는 캐시 결과를 씁니다.</p>
-<div class="language-bash codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-bash codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">turbo run build       # 바뀐 것 + 영향받는 것만 빌드, 나머지는 캐시</span><br></div></code></pre></div></div>
-<p>입력(소스·의존·설정)이 그대로면 이전 빌드 결과를 캐시에서 그대로 가져옵니다. 전체를 매번 다시 빌드하지 않으니, 레포가 커져도 피드백이 느려지지 않습니다.</p>
-<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-3.webp" alt="변경된 공유 패키지와 그것을 의존하는 앱만 다시 빌드하고, 무관한 패키지·앱은 캐시 결과를 가져오는 증분 빌드"></figure>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="순환-의존과-캐시-키-누락">순환 의존과 캐시 키 누락<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%88%9C%ED%99%98-%EC%9D%98%EC%A1%B4%EA%B3%BC-%EC%BA%90%EC%8B%9C-%ED%82%A4-%EB%88%84%EB%9D%BD" class="hash-link" aria-label="순환 의존과 캐시 키 누락에 대한 직접 링크" title="순환 의존과 캐시 키 누락에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class="">순환 의존: 패키지 A가 B를, B가 다시 A를 의존하면 그래프가 꼬여 증분 빌드가 어긋납니다. 의존 방향은 한쪽으로 유지합니다.</li>
-<li class="">캐시 키를 잘못 잡음: 빌드에 영향을 주는 입력(환경 변수·설정 파일 등)을 캐시 키에서 빠뜨리면, <span style="background-color:#ffdce0">바뀌었는데도 옛 캐시를 가져옵니다.</span> 입력을 빠짐없이 키에 넣습니다.</li>
-<li class="">결국 전부 빌드: 의존을 너무 넓게 걸면 작은 변경에도 전부 다시 빌드됩니다. 공유 패키지를 잘게 나눠 영향 범위를 좁힙니다.</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/monorepo-workspace-tooling#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><strong>패키지 매니저 워크스페이스만 있으면 안 되나요?</strong>
-<ul>
-<li class="">공유는 됩니다. 다만 "무엇을 다시 빌드할지"는 직접 관리해야 합니다. 레포가 커지면 증분 빌드·캐시를 주는 오케스트레이터의 이점이 커집니다.</li>
-</ul>
-</li>
-<li class=""><strong>Turborepo와 Nx 중 무엇을 고르나요?</strong>
-<ul>
-<li class="">핵심 기능(task 그래프·캐시)은 비슷합니다. 설정이 가볍고 단순하면 Turborepo, 플러그인과 코드 생성까지 폭넓게 쓰려면 Nx가 흔한 선택입니다.</li>
-</ul>
-</li>
-<li class=""><strong>JS가 아닌 언어도 되나요?</strong>
-<ul>
-<li class="">됩니다. uv(파이썬), Cargo(러스트), Go workspace가 같은 "워크스페이스" 개념을 제공합니다. 오케스트레이터도 언어 무관하게 task를 묶을 수 있습니다.</li>
-</ul>
-</li>
-</ul>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
-<ul>
-<li class=""><a href="https://turborepo.com/docs/crafting-your-repository/caching" target="_blank" rel="noopener noreferrer" class="">Turborepo: Caching</a>: 태스크 그래프와 캐시 키</li>
-<li class=""><a href="https://nx.dev/features/cache-task-results" target="_blank" rel="noopener noreferrer" class="">Nx: Cache Task Results</a></li>
-<li class=""><a href="https://pnpm.io/workspaces" target="_blank" rel="noopener noreferrer" class="">pnpm workspaces</a>: <code>workspace:</code> 프로토콜</li>
-</ul>]]></content>
-        <author>
-            <name>KGENOTS</name>
-            <uri>https://github.com/kgenots</uri>
-        </author>
-        <category label="Reference" term="Reference"/>
-        <category label="Architecture" term="Architecture"/>
-        <category label="Ops" term="Ops"/>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[NATS JetStream 스트림 보관 정책 이해하기]]></title>
         <id>https://kgenots.com/blog/nats-jetstream-retention</id>
         <link href="https://kgenots.com/blog/nats-jetstream-retention"/>
@@ -424,6 +357,73 @@
         <category label="Reference" term="Reference"/>
         <category label="Backend" term="Backend"/>
         <category label="NATS" term="NATS"/>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[모노레포 워크스페이스 도구 이해하기 (공유 패키지와 증분 빌드)]]></title>
+        <id>https://kgenots.com/blog/monorepo-workspace-tooling</id>
+        <link href="https://kgenots.com/blog/monorepo-workspace-tooling"/>
+        <updated>2026-06-19T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[모노레포에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.]]></summary>
+        <content type="html"><![CDATA[<p><a class="glossary-term-link" href="https://kgenots.com/glossary#monorepo">모노레포</a>에서 공통 코드를 공유하고, 바뀐 부분만 다시 빌드하게 해 주는 워크스페이스 도구가 무엇이고 어떻게 나뉘는지 정리합니다.</p>
+<p>모노레포 도구는 두 층위로 나뉩니다. 패키지 매니저의 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 바뀐 부분만 다시 빌드(증분 빌드)하고 캐시를 관리합니다.</p>
+<p>둘을 한 덩어리로 보면, 빌드가 느릴 때 어느 쪽을 손봐야 하는지 헷갈립니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="워크스페이스-도구가-하는-일">워크스페이스 도구가 하는 일<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%9B%8C%ED%81%AC%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4-%EB%8F%84%EA%B5%AC%EA%B0%80-%ED%95%98%EB%8A%94-%EC%9D%BC" class="hash-link" aria-label="워크스페이스 도구가 하는 일에 대한 직접 링크" title="워크스페이스 도구가 하는 일에 대한 직접 링크" translate="no">​</a></h2>
+<p>워크스페이스 도구는 한 레포 안의 여러 패키지를 함께 관리하게 해 주는 도구입니다. 공통 코드를 여러 앱이 나눠 쓰게 연결하고, 무엇을 다시 빌드할지 정리해 줍니다.</p>
+<p>요리에 비유하면, 여러 메뉴(앱)가 공용 재료 창고(공유 패키지)를 함께 씁니다. 재료가 바뀌면 그 재료를 쓰는 메뉴만 다시 조리합니다.</p>
+<p>창고를 연결하는 일과 다시 조리할 메뉴를 고르는 일은 서로 다릅니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="두-층위로-나눠-보기">두 층위로 나눠 보기<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%91%90-%EC%B8%B5%EC%9C%84%EB%A1%9C-%EB%82%98%EB%88%A0-%EB%B3%B4%EA%B8%B0" class="hash-link" aria-label="두 층위로 나눠 보기에 대한 직접 링크" title="두 층위로 나눠 보기에 대한 직접 링크" translate="no">​</a></h2>
+<p>도구를 두 층위로 나눠 보면 역할이 분명해집니다.</p>
+<table><thead><tr><th>층위</th><th>역할</th><th>대표 도구</th></tr></thead><tbody><tr><td>패키지 매니저 워크스페이스</td><td>공유 패키지를 연결(의존성)</td><td>pnpm/yarn workspaces, uv, Cargo, Go workspace</td></tr><tr><td>빌드 오케스트레이터</td><td>task 그래프 + 증분 빌드·캐시</td><td>Turborepo, Nx</td></tr></tbody></table>
+<p>둘은 함께 씁니다. 패키지 매니저가 "무엇을 공유하는지"를 알고, 오케스트레이터가 "무엇을 다시 만들지"를 정합니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-2.webp" alt="패키지 매니저 워크스페이스가 공유 패키지를 연결하고, 빌드 오케스트레이터가 증분 빌드와 캐시를 담당하는 두 층위 구분"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="공유-패키지-연결-패키지-매니저">공유 패키지 연결 (패키지 매니저)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EA%B3%B5%EC%9C%A0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EC%97%B0%EA%B2%B0-%ED%8C%A8%ED%82%A4%EC%A7%80-%EB%A7%A4%EB%8B%88%EC%A0%80" class="hash-link" aria-label="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" title="공유 패키지 연결 (패키지 매니저)에 대한 직접 링크" translate="no">​</a></h2>
+<p>첫 층위는 공유 패키지를 연결하는 일입니다. 워크스페이스를 선언하면, 한 패키지를 고쳤을 때 그것을 쓰는 앱이 즉시 같은 코드를 봅니다.</p>
+<p>버전을 올려 배포하고 다시 받아오는 왕복이 사라집니다.</p>
+<div class="language-yaml codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-yaml codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic"># pnpm-workspace.yaml</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token key atrule">packages</span><span class="token punctuation" style="color:rgb(199, 146, 234)">:</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"apps/*"</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">  </span><span class="token punctuation" style="color:rgb(199, 146, 234)">-</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"packages/*"</span><br></div></code></pre></div></div>
+<div class="language-json codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-json codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token comment" style="color:rgb(105, 112, 152);font-style:italic">// apps/web/package.json (공유 패키지를 그대로 의존)</span><span class="token plain"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain"></span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"dependencies"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">{</span><span class="token plain"> </span><span class="token property">"@acme/ui"</span><span class="token operator" style="color:rgb(137, 221, 255)">:</span><span class="token plain"> </span><span class="token string" style="color:rgb(195, 232, 141)">"workspace:*"</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(199, 146, 234)">}</span><br></div></code></pre></div></div>
+<p>이 연결이 모노레포의 가장 큰 이점입니다. 공유 코드와 계약이 한 커밋에서 같이 움직입니다.</p>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="바뀐-것만-빌드-오케스트레이터">바뀐 것만 빌드 (오케스트레이터)<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EB%B0%94%EB%80%90-%EA%B2%83%EB%A7%8C-%EB%B9%8C%EB%93%9C-%EC%98%A4%EC%BC%80%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%9D%B4%ED%84%B0" class="hash-link" aria-label="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" title="바뀐 것만 빌드 (오케스트레이터)에 대한 직접 링크" translate="no">​</a></h2>
+<p>둘째 층위는 바뀐 것만 다시 빌드하는 일입니다. 빌드 오케스트레이터는 패키지 사이의 의존 그래프를 알고 있어서, 바뀐 패키지와 그 영향을 받는 앱만 다시 빌드하고 나머지는 캐시 결과를 씁니다.</p>
+<div class="language-bash codeBlockContainer_aqZ6 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_feA4"><pre tabindex="0" class="prism-code language-bash codeBlock_ohDO thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_NWn7"><div class="token-line" style="color:#bfc7d5"><span class="token plain">turbo run build       # 바뀐 것 + 영향받는 것만 빌드, 나머지는 캐시</span><br></div></code></pre></div></div>
+<p>입력(소스·의존·설정)이 그대로면 이전 빌드 결과를 캐시에서 그대로 가져옵니다. 전체를 매번 다시 빌드하지 않으니, 레포가 커져도 피드백이 느려지지 않습니다.</p>
+<figure style="text-align:center"><img src="https://kgenots.com/assets/blog/monorepo-workspace-tooling-3.webp" alt="변경된 공유 패키지와 그것을 의존하는 앱만 다시 빌드하고, 무관한 패키지·앱은 캐시 결과를 가져오는 증분 빌드"></figure>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="순환-의존과-캐시-키-누락">순환 의존과 캐시 키 누락<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%88%9C%ED%99%98-%EC%9D%98%EC%A1%B4%EA%B3%BC-%EC%BA%90%EC%8B%9C-%ED%82%A4-%EB%88%84%EB%9D%BD" class="hash-link" aria-label="순환 의존과 캐시 키 누락에 대한 직접 링크" title="순환 의존과 캐시 키 누락에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class="">순환 의존: 패키지 A가 B를, B가 다시 A를 의존하면 그래프가 꼬여 증분 빌드가 어긋납니다. 의존 방향은 한쪽으로 유지합니다.</li>
+<li class="">캐시 키를 잘못 잡음: 빌드에 영향을 주는 입력(환경 변수·설정 파일 등)을 캐시 키에서 빠뜨리면, <span style="background-color:#ffdce0">바뀌었는데도 옛 캐시를 가져옵니다.</span> 입력을 빠짐없이 키에 넣습니다.</li>
+<li class="">결국 전부 빌드: 의존을 너무 넓게 걸면 작은 변경에도 전부 다시 빌드됩니다. 공유 패키지를 잘게 나눠 영향 범위를 좁힙니다.</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="qa">Q&amp;A<a href="https://kgenots.com/blog/monorepo-workspace-tooling#qa" class="hash-link" aria-label="Q&amp;A에 대한 직접 링크" title="Q&amp;A에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>패키지 매니저 워크스페이스만 있으면 안 되나요?</strong>
+<ul>
+<li class="">공유는 됩니다. 다만 "무엇을 다시 빌드할지"는 직접 관리해야 합니다. 레포가 커지면 증분 빌드·캐시를 주는 오케스트레이터의 이점이 커집니다.</li>
+</ul>
+</li>
+<li class=""><strong>Turborepo와 Nx 중 무엇을 고르나요?</strong>
+<ul>
+<li class="">핵심 기능(task 그래프·캐시)은 비슷합니다. 설정이 가볍고 단순하면 Turborepo, 플러그인과 코드 생성까지 폭넓게 쓰려면 Nx가 흔한 선택입니다.</li>
+</ul>
+</li>
+<li class=""><strong>JS가 아닌 언어도 되나요?</strong>
+<ul>
+<li class="">됩니다. uv(파이썬), Cargo(러스트), Go workspace가 같은 "워크스페이스" 개념을 제공합니다. 오케스트레이터도 언어 무관하게 task를 묶을 수 있습니다.</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="참고자료">참고자료<a href="https://kgenots.com/blog/monorepo-workspace-tooling#%EC%B0%B8%EA%B3%A0%EC%9E%90%EB%A3%8C" class="hash-link" aria-label="참고자료에 대한 직접 링크" title="참고자료에 대한 직접 링크" translate="no">​</a></h2>
+<ul>
+<li class=""><a href="https://turborepo.com/docs/crafting-your-repository/caching" target="_blank" rel="noopener noreferrer" class="">Turborepo: Caching</a>: 태스크 그래프와 캐시 키</li>
+<li class=""><a href="https://nx.dev/features/cache-task-results" target="_blank" rel="noopener noreferrer" class="">Nx: Cache Task Results</a></li>
+<li class=""><a href="https://pnpm.io/workspaces" target="_blank" rel="noopener noreferrer" class="">pnpm workspaces</a>: <code>workspace:</code> 프로토콜</li>
+</ul>]]></content>
+        <author>
+            <name>KGENOTS</name>
+            <uri>https://github.com/kgenots</uri>
+        </author>
+        <category label="Reference" term="Reference"/>
+        <category label="Architecture" term="Architecture"/>
+        <category label="Ops" term="Ops"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[SPA를 한 번 빌드해 여러 환경에 띄우기 (런타임 설정)]]></title>
@@ -959,7 +959,8 @@ Single-thread 환경에서 동시에 여러 동작을 하기 위해(멀티쓰레
         <updated>2023-11-09T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[마크다운 문서에서 글자 크기 및 색상을 조절하는 방법에 대해서 알아보겠습니다.]]></summary>
         <content type="html"><![CDATA[<p>마크다운 문서에서 글자 크기 및 색상을 조절하는 방법에 대해서 알아보겠습니다.</p>
-<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="글자-크기-및-속성">글자 크기 및 속성<a href="https://kgenots.com/blog/markdown-text-color#%EA%B8%80%EC%9E%90-%ED%81%AC%EA%B8%B0-%EB%B0%8F-%EC%86%8D%EC%84%B1" class="hash-link" aria-label="글자 크기 및 속��성에 대한 직접 링크" title="글자 크기 및 속성에 대한 직접 링크" translate="no">​</a></h2>
+<div class="theme-admonition theme-admonition-tip admonition_fNjz alert alert--success"><div class="admonitionHeading_Vocr"><span class="admonitionIcon_a2K3"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>코드를 바로 만들고 싶다면</div><div class="admonitionContent_DBQh"><p><a class="" href="https://kgenots.com/tools/markdown-color">마크다운 글자색·형광펜 생성기</a>에서 문장과 색을 고르면 HTML 코드와 GitHub 용 코드를 만들어 드립니다.</p></div></div>
+<h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="글자-크기-및-속성">글자 크기 및 속성<a href="https://kgenots.com/blog/markdown-text-color#%EA%B8%80%EC%9E%90-%ED%81%AC%EA%B8%B0-%EB%B0%8F-%EC%86%8D%EC%84%B1" class="hash-link" aria-label="글자 크기 및 속성에 대한 직접 링크" title="글자 크기 및 속성에 대한 직접 링크" translate="no">​</a></h2>
 <h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="제목">제목<a href="https://kgenots.com/blog/markdown-text-color#%EC%A0%9C%EB%AA%A9" class="hash-link" aria-label="제목에 대한 직접 링크" title="제목에 대한 직접 링크" translate="no">​</a></h3>
 <table><thead><tr><th><strong>예시</strong></th><th><strong>코드</strong></th></tr></thead><tbody><tr><td><h1> H1 </h1></td><td><code># H1</code></td></tr><tr><td><h2> H2 </h2></td><td><code>## H2</code></td></tr><tr><td><h3> H3 </h3></td><td><code>### H3</code></td></tr><tr><td><h4> H4 </h4></td><td><code>#### H4</code></td></tr><tr><td><h5> H5 </h5></td><td><code>##### H5</code></td></tr><tr><td><h6> H6 </h6></td><td><code>###### H6</code></td></tr></tbody></table>
 <h3 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="강조">강조<a href="https://kgenots.com/blog/markdown-text-color#%EA%B0%95%EC%A1%B0" class="hash-link" aria-label="강조에 대한 직접 링크" title="강조에 대한 직접 링크" translate="no">​</a></h3>
@@ -1114,6 +1115,7 @@ Single-thread 환경에서 동시에 여러 동작을 하기 위해(멀티쓰레
         <updated>2022-11-23T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[MacOS 내 독(Dock) 뜨는 속도 더 빠르게 하는 방법입니다.]]></summary>
         <content type="html"><![CDATA[<p>MacOS 내 독(Dock) 뜨는 속도 더 빠르게 하는 방법입니다.</p>
+<div class="theme-admonition theme-admonition-tip admonition_fNjz alert alert--success"><div class="admonitionHeading_Vocr"><span class="admonitionIcon_a2K3"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>원하는 속도로 명령어를 만들고 싶다면</div><div class="admonitionContent_DBQh"><p><a class="" href="https://kgenots.com/tools/mac-dock-speed">맥 독(Dock) 속도 명령어 생성기</a>에서 대기 시간과 애니메이션 속도를 고르면 터미널 명령어를 만들어 드립니다.</p></div></div>
 <p>MacOS를 사용하다보면 화면 아래에 숨겨진 독을 보기 위해 마우스를 화면 아래로 가져다대면 생각보다 한참 있다가 스르륵 하고 열리는 독을 볼 수 있을겁니다. 이를 답답해하는 분들이 있기에 독이 열리는 속도를 빠르게 할 수 있는 몇 가지 해결 방법을 가지고 와 봤습니다.</p>
 <figure style="text-align:center"><img src="https://kgenots.com/assets/blog/mac-dock-speed-up.webp" alt="mac-dock-speed-up"></figure>
 <h2 class="anchor anchorTargetHideOnScrollNavbar_u4j2" id="방법-1-단축키를-이용해-자동-숨김보이기-설정">방법 1. 단축키를 이용해 자동 숨김/보이기 설정<a href="https://kgenots.com/blog/mac-dock-speed-up#%EB%B0%A9%EB%B2%95-1-%EB%8B%A8%EC%B6%95%ED%82%A4%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%B4-%EC%9E%90%EB%8F%99-%EC%88%A8%EA%B9%80%EB%B3%B4%EC%9D%B4%EA%B8%B0-%EC%84%A4%EC%A0%95" class="hash-link" aria-label="방법 1. 단축키를 이용해 자동 숨김/보이기 설정에 대한 직접 링크" title="방법 1. 단축키를 이용해 자동 숨김/보이기 설정에 대한 직접 링크" translate="no">​</a></h2>
